@@ -90,6 +90,11 @@
       "editorFont": {
         "label": "字體（跟隨編輯器字體）",
         "hint": "此處暫時不可修改，如需修改，請在 IDEA 設定 → 編輯器 → 字體 中調整（重啟 IDEA 後本外掛字體生效）"
+      },
+      "workingDirectory": {
+        "label": "工作目錄",
+        "placeholder": "例如 project1 或留空使用项目根目錄",
+        "hint": "指定 Claude 工作的目錄。可以使用相对路径（相对于项目根目錄）或绝对路径。留空则使用项目根目錄。"
       }
     },
     "providers": "供應商管理",
@@ -196,8 +201,13 @@
         "showApiKey": "顯示",
         "hideApiKey": "隱藏",
         "confirmAdd": "確認新增",
-        "saveChanges": "儲存變更"
-      }
+        "saveChanges": "儲存變更",
+        "codeView": "代碼",
+        "visualView": "可視化",
+        "formatJson": "格式化",
+        "invalidJson": "JSON 格式錯誤，請切換到代碼视图修正"
+      },
+      "importFromCcSwitchFile": "選擇 cc-switch.db 檔案匯入"
     },
     "comingSoon": "功能即將推出...",
     "permissionsComingSoon": "權限配置功能即將推出...",
@@ -253,7 +263,9 @@
     "deleteSuccess": "刪除成功",
     "operationFailed": "操作失敗",
     "copySuccess": "{{label}}已複製到剪貼簿",
-    "copyFailed": "複製失敗"
+    "copyFailed": "複製失敗",
+    "configLoading": "配置載入中，請稍後再試",
+    "newSessionCreated": "新會話已創建"
   },
   "config": {
     "clickToCopy": "點選複製",
@@ -343,7 +355,15 @@
       "memory": "Knowledge graph and memory storage tool",
       "sequentialThinking": "Sequential thinking and reasoning tool",
       "context7": "Document search and context retrieval tool"
-    }
+    },
+    "url": "URL",
+    "connectionStatus": "連接狀態",
+    "serverVersion": "伺服器版本",
+    "statusConnected": "已連接",
+    "statusFailed": "連接失敗",
+    "statusNeedsAuth": "需要認證",
+    "statusPending": "連接中...",
+    "statusUnknown": "未知"
   },
   "tools": {
     "toolCall": "工具調用",
@@ -419,6 +439,66 @@
         "label": "Haiku 4.5",
         "description": "Haiku 4.5 · 速度最快，適合快速回覆"
       }
+    },
+    "codex": {
+      "gpt51codex": {
+        "label": "gpt-5.1-codex",
+        "description": "针对codex进行了优化"
+      },
+      "gpt51codexMini": {
+        "label": "gpt-5.1-codex-mini",
+        "description": "针对codex进行了优化。更便宜、更快，但性能较差"
+      },
+      "gpt51": {
+        "label": "gpt-5.1",
+        "description": "具有广泛的世界知识和强大的一般推理能力"
+      }
     }
+  },
+  "modes": {
+    "default": {
+      "label": "預設模式",
+      "tooltip": "標準權限行为",
+      "description": "需要手动確認每个操作，适合謹慎使用"
+    },
+    "plan": {
+      "label": "規劃模式",
+      "tooltip": "規劃模式——无執行（暂不支持）",
+      "description": "仅規劃不執行，暂不支持"
+    },
+    "acceptEdits": {
+      "label": "代理模式",
+      "tooltip": "自動接受文件編輯",
+      "description": "自動接受文件創建/編輯，減少確認步驟"
+    },
+    "bypassPermissions": {
+      "label": "自動模式",
+      "tooltip": "繞過所有權限檢查",
+      "description": "完全自動化，繞過所有權限檢查【謹慎使用】"
+    }
+  },
+  "providers": {
+    "claude": {
+      "label": "Claude Code"
+    },
+    "codex": {
+      "label": "Codex Cli"
+    },
+    "gemini": {
+      "label": "Gemini Cli"
+    }
+  },
+  "promptEnhancer": {
+    "title": "增強提示詞",
+    "tooltip": "重寫提示詞以提供更多上下文并改善 AI 響應",
+    "shortcut": "⌘/",
+    "enhancing": "正在增強提示詞...",
+    "originalPrompt": "原始提示詞",
+    "enhancedPrompt": "增強后的提示詞",
+    "useEnhanced": "使用增強版本",
+    "keepOriginal": "保留原始版本",
+    "enhanceFailed": "增強提示詞失敗",
+    "emptyPrompt": "請先輸入提示詞",
+    "copyEnhanced": "複製增強版本"
   }
 }

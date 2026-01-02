@@ -30,7 +30,18 @@ public class HistoryHandler extends BaseMessageHandler {
         void onLoadSession(String sessionId, String projectPath);
     }
 
+    // 会话删除回调接口（用于删除当前活跃的 session）
+    public interface SessionDeleteCallback {
+        /**
+         * 在删除当前活跃的 session 之前调用
+         * @param sessionId 要删除的 sessionId
+         * @return CompletableFuture，完成后表示可以安全删除
+         */
+        CompletableFuture<Void> onDeleteCurrentSession(String sessionId);
+    }
+
     private SessionLoadCallback sessionLoadCallback;
+    private SessionDeleteCallback sessionDeleteCallback;
 
     public HistoryHandler(HandlerContext context) {
         super(context);
@@ -38,6 +49,10 @@ public class HistoryHandler extends BaseMessageHandler {
 
     public void setSessionLoadCallback(SessionLoadCallback callback) {
         this.sessionLoadCallback = callback;
+    }
+
+    public void setSessionDeleteCallback(SessionDeleteCallback callback) {
+        this.sessionDeleteCallback = callback;
     }
 
     @Override
@@ -146,9 +161,19 @@ public class HistoryHandler extends BaseMessageHandler {
     /**
      * 删除会话历史文件
      * 删除指定 sessionId 的 .jsonl 文件以及相关的 agent-xxx.jsonl 文件
+     * 如果删除的是当前活跃的 session，会先通过回调中断并重建 session
      */
     private void handleDeleteSession(String sessionId) {
-        CompletableFuture.runAsync(() -> {
+        // 先检查是否需要中断当前 session
+        CompletableFuture<Void> prepareFuture = CompletableFuture.completedFuture(null);
+
+        if (sessionDeleteCallback != null) {
+            LOG.info("[HistoryHandler] 调用回调检查是否需要中断当前 session");
+            prepareFuture = sessionDeleteCallback.onDeleteCurrentSession(sessionId);
+        }
+
+        // 等待中断完成后再删除文件
+        prepareFuture.thenRunAsync(() -> {
             try {
                 String projectPath = context.getProject().getBasePath();
                 LOG.info("[HistoryHandler] ========== 开始删除会话 ==========");

@@ -331,6 +331,7 @@ public class ClaudeSDKToolWindow implements ToolWindowFactory, DumbAware {
             // 历史处理器（需要特殊回调）
             this.historyHandler = new HistoryHandler(handlerContext);
             historyHandler.setSessionLoadCallback(this::loadHistorySession);
+            historyHandler.setSessionDeleteCallback(this::handleDeleteCurrentSession);
             messageDispatcher.registerHandler(historyHandler);
 
             LOG.info("Registered " + messageDispatcher.getHandlerCount() + " message handlers");
@@ -823,6 +824,42 @@ public class ClaudeSDKToolWindow implements ToolWindowFactory, DumbAware {
             return projectPath;
         }
 
+        /**
+         * 处理删除当前活跃 session 的回调
+         * 在删除文件之前，先检查是否是当前 session
+         * 如果是，则中断当前 session 并创建新 session
+         * 如果不是，则直接返回，不做任何操作
+         */
+        private CompletableFuture<Void> handleDeleteCurrentSession(String sessionId) {
+            // 获取当前 session 的 ID
+            String currentSessionId = session != null ? session.getSessionId() : null;
+
+            LOG.info("[ClaudeSDKToolWindow] 准备删除 session: " + sessionId + ", 当前 session: " + currentSessionId);
+
+            // 判断是否是当前活跃的 session
+            if (currentSessionId != null && currentSessionId.equals(sessionId)) {
+                LOG.info("[ClaudeSDKToolWindow] 删除的是当前活跃 session，先中断并重建");
+
+                // 先中断当前 session
+                return session.interrupt().thenCompose(v -> {
+                    LOG.info("[ClaudeSDKToolWindow] Session 已中断，准备创建新 session");
+                    // 创建新 session 替换旧的
+                    return CompletableFuture.runAsync(() -> {
+                        try {
+                            createNewSession();
+                            LOG.info("[ClaudeSDKToolWindow] 新 session 已创建，可以安全删除旧 session 文件");
+                        } catch (Exception e) {
+                            LOG.error("[ClaudeSDKToolWindow] 创建新 session 失败: " + e.getMessage(), e);
+                        }
+                    });
+                });
+            } else {
+                LOG.info("[ClaudeSDKToolWindow] 删除的不是当前 session，直接返回");
+                // 不是当前 session，直接返回完成的 Future
+                return CompletableFuture.completedFuture(null);
+            }
+        }
+
         private void loadHistorySession(String sessionId, String projectPath) {
             LOG.info("Loading history session: " + sessionId + " from project: " + projectPath);
 
@@ -1162,9 +1199,8 @@ public class ClaudeSDKToolWindow implements ToolWindowFactory, DumbAware {
 
                 LOG.info("New session created successfully, working directory: " + workingDirectory);
 
-                // 更新前端状态
+                // 更新前端状态（注意：不再调用 updateStatus，避免与前端 toast 重复）
                 ApplicationManager.getApplication().invokeLater(() -> {
-                    callJavaScript("updateStatus", JsUtils.escapeJs("新会话已创建，可以开始提问"));
 
                     // 重置 Token 使用统计
                     int maxTokens = SettingsHandler.getModelContextLimit(handlerContext.getCurrentModel());
