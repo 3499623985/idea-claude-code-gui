@@ -115,6 +115,11 @@ interface Window {
   clearSelectionInfo?: () => void;
 
   /**
+   * Restore input focus - 恢复输入框焦点
+   */
+  restoreInputFocus?: () => void;
+
+  /**
    * File list result callback (for file reference provider)
    */
   onFileListResult?: (json: string) => void;

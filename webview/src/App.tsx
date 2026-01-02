@@ -558,6 +558,17 @@ const App = () => {
       console.log('[Frontend] clearSelectionInfo called');
       setContextInfo(null);
     };
+
+    // 全局焦点恢复函数
+    window.restoreInputFocus = () => {
+      setTimeout(() => {
+        const inputBox = document.querySelector('[contenteditable="true"]');
+        if (inputBox instanceof HTMLElement) {
+          inputBox.focus();
+          console.log('[Frontend] Input focus restored');
+        }
+      }, 100);
+    };
   }, []); // 移除 currentProvider 依赖，因为现在使用 ref 获取最新值
 
   useEffect(() => {
@@ -651,6 +662,8 @@ const App = () => {
         if (messagesContainerRef.current) {
           messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
         }
+        // 恢复输入框焦点
+        window.restoreInputFocus?.();
       }, 0);
       return () => clearTimeout(timer);
     }
@@ -845,10 +858,14 @@ const App = () => {
     // 保留 maxTokens，等待后端推送；如果此前已知模型，可按默认 272K 预估
     setUsageMaxTokens((prev) => prev ?? 272000);
     addToast(t('toast.newSessionCreated'), 'success');
+    // 恢复输入框焦点
+    window.restoreInputFocus?.();
   };
 
   const handleCancelNewSession = () => {
     setShowNewSessionConfirm(false);
+    // 恢复输入框焦点
+    window.restoreInputFocus?.();
   };
 
   const handleConfirmInterrupt = () => {
@@ -863,10 +880,14 @@ const App = () => {
     setUsageUsedTokens(0);
     setUsageMaxTokens((prev) => prev ?? 272000);
     addToast(t('toast.newSessionCreated'), 'success');
+    // 恢复输入框焦点
+    window.restoreInputFocus?.();
   };
 
   const handleCancelInterrupt = () => {
     setShowInterruptConfirm(false);
+    // 恢复输入框焦点
+    window.restoreInputFocus?.();
   };
 
   /**
@@ -886,6 +907,8 @@ const App = () => {
     console.log('[PERM_DEBUG][FRONTEND] Decision sent, closing dialog');
     setPermissionDialogOpen(false);
     setCurrentPermissionRequest(null);
+    // 恢复输入框焦点
+    window.restoreInputFocus?.();
   };
 
   /**
@@ -905,6 +928,8 @@ const App = () => {
     console.log('[PERM_DEBUG][FRONTEND] Decision sent, closing dialog');
     setPermissionDialogOpen(false);
     setCurrentPermissionRequest(null);
+    // 恢复输入框焦点
+    window.restoreInputFocus?.();
   };
 
   /**
@@ -924,6 +949,8 @@ const App = () => {
     console.log('[PERM_DEBUG][FRONTEND] Decision sent, closing dialog');
     setPermissionDialogOpen(false);
     setCurrentPermissionRequest(null);
+    // 恢复输入框焦点
+    window.restoreInputFocus?.();
   };
 
   const toggleThinking = (messageIndex: number, blockIndex: number) => {
