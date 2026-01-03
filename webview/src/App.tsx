@@ -336,6 +336,11 @@ const App = () => {
       addToast(message, type);
     };
 
+    // 注册删除会话失败回调（后端调用）
+    window.onDeleteSessionFailed = () => {
+      addToast(t('history.deleteFailed'), 'error');
+    };
+
     // 注册导出会话数据回调
     window.onExportSessionData = (json) => {
       try {
@@ -559,15 +564,23 @@ const App = () => {
       setContextInfo(null);
     };
 
-    // 全局焦点恢复函数
+    // 全局焦点恢复函数（带重试机制）
     window.restoreInputFocus = () => {
-      setTimeout(() => {
-        const inputBox = document.querySelector('[contenteditable="true"]');
+      const restoreFocus = (retries = 3) => {
+        // 使用更精确的选择器，只匹配 ChatInputBox 中的输入框
+        const inputBox = document.querySelector('.chat-input-box [contenteditable="true"]');
         if (inputBox instanceof HTMLElement) {
           inputBox.focus();
           console.log('[Frontend] Input focus restored');
+        } else if (retries > 0) {
+          // 如果未找到元素，延迟后重试
+          setTimeout(() => restoreFocus(retries - 1), 100);
+        } else {
+          console.warn('[Frontend] Failed to restore input focus: element not found');
         }
-      }, 100);
+      };
+      // 使用 requestAnimationFrame 确保 DOM 更新完成后再尝试聚焦
+      requestAnimationFrame(() => restoreFocus());
     };
   }, []); // 移除 currentProvider 依赖，因为现在使用 ref 获取最新值
 

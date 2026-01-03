@@ -63,6 +63,11 @@ interface Window {
   addToast?: (message: string, type: 'success' | 'error' | 'warning' | 'info') => void;
 
   /**
+   * Delete session failed callback (called from backend)
+   */
+  onDeleteSessionFailed?: () => void;
+
+  /**
    * Usage statistics update callback
    */
   onUsageUpdate?: (json: string) => void;

@@ -220,6 +220,7 @@
     "confirmDelete": "हटाने की पुष्टि करें",
     "deleteMessage": "क्या आप इस सत्र को हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।",
     "deleteSession": "इस सत्र को हटाएं",
+    "deleteFailed": "सत्र हटाने में विफल",
     "exportSession": "सत्र निर्यात करें",
     "exportSuccess": "सत्र निर्यात किया गया",
     "exportFailed": "निर्यात विफल",

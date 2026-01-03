@@ -172,7 +172,7 @@ public class HistoryHandler extends BaseMessageHandler {
             prepareFuture = sessionDeleteCallback.onDeleteCurrentSession(sessionId);
         }
 
-        // 等待中断完成后再删除文件
+        // 等待中断完成后再删除文件，添加异常处理
         prepareFuture.thenRunAsync(() -> {
             try {
                 String projectPath = context.getProject().getBasePath();
@@ -249,7 +249,20 @@ public class HistoryHandler extends BaseMessageHandler {
 
             } catch (Exception e) {
                 LOG.error("[HistoryHandler] ❌ 删除会话失败: " + e.getMessage(), e);
+                // 通知前端删除失败
+                ApplicationManager.getApplication().invokeLater(() -> {
+                    String jsCode = "if (window.onDeleteSessionFailed) { window.onDeleteSessionFailed(); }";
+                    context.executeJavaScriptOnEDT(jsCode);
+                });
             }
+        }).exceptionally(ex -> {
+            // 处理 prepareFuture 失败的情况（如创建新会话失败）
+            LOG.error("[HistoryHandler] ❌ 删除会话准备阶段失败，取消文件删除: " + ex.getMessage(), ex);
+            ApplicationManager.getApplication().invokeLater(() -> {
+                String jsCode = "if (window.onDeleteSessionFailed) { window.onDeleteSessionFailed(); }";
+                context.executeJavaScriptOnEDT(jsCode);
+            });
+            return null;
         });
     }
 

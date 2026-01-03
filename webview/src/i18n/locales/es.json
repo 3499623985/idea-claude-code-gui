@@ -220,6 +220,7 @@
     "confirmDelete": "Confirmar eliminación",
     "deleteMessage": "��Estás seguro de que quieres eliminar esta sesión? Esta acción no se puede deshacer.",
     "deleteSession": "Eliminar esta sesión",
+    "deleteFailed": "Error al eliminar sesión",
     "exportSession": "Exportar sesión",
     "exportSuccess": "Sesión exportada",
     "exportFailed": "Falló la exportación",

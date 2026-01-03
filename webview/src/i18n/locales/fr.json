@@ -220,6 +220,7 @@
     "confirmDelete": "Confirmer la suppression",
     "deleteMessage": "Êtes-vous sûr de vouloir supprimer cette session ? Cette action ne peut pas être annulée.",
     "deleteSession": "Supprimer cette session",
+    "deleteFailed": "Échec de la suppression de session",
     "exportSession": "Exporter la session",
     "exportSuccess": "Session exportée",
     "exportFailed": "Échec de l'exportation",

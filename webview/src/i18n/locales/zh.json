@@ -220,6 +220,7 @@
     "confirmDelete": "确认删除",
     "deleteMessage": "确定要删除这个会话吗?此操作无法撤销。",
     "deleteSession": "删除此会话",
+    "deleteFailed": "删除会话失败",
     "exportSession": "导出会话",
     "exportSuccess": "会话已导出",
     "exportFailed": "导出失败",

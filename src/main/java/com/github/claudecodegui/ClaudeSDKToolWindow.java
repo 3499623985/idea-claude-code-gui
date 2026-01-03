@@ -834,27 +834,30 @@ public class ClaudeSDKToolWindow implements ToolWindowFactory, DumbAware {
             // 获取当前 session 的 ID
             String currentSessionId = session != null ? session.getSessionId() : null;
 
-            LOG.info("[ClaudeSDKToolWindow] 准备删除 session: " + sessionId + ", 当前 session: " + currentSessionId);
+            LOG.debug("[ClaudeSDKToolWindow] 准备删除 session: " + sessionId + ", 当前 session: " + currentSessionId);
 
             // 判断是否是当前活跃的 session
             if (currentSessionId != null && currentSessionId.equals(sessionId)) {
-                LOG.info("[ClaudeSDKToolWindow] 删除的是当前活跃 session，先中断并重建");
+                LOG.debug("[ClaudeSDKToolWindow] 删除的是当前活跃 session，先中断并重建");
 
                 // 先中断当前 session
                 return session.interrupt().thenCompose(v -> {
-                    LOG.info("[ClaudeSDKToolWindow] Session 已中断，准备创建新 session");
+                    LOG.debug("[ClaudeSDKToolWindow] Session 已中断，准备创建新 session");
                     // 创建新 session 替换旧的
-                    return CompletableFuture.runAsync(() -> {
-                        try {
-                            createNewSession();
-                            LOG.info("[ClaudeSDKToolWindow] 新 session 已创建，可以安全删除旧 session 文件");
-                        } catch (Exception e) {
-                            LOG.error("[ClaudeSDKToolWindow] 创建新 session 失败: " + e.getMessage(), e);
-                        }
-                    });
+                    CompletableFuture<Void> future = new CompletableFuture<>();
+                    try {
+                        createNewSession();
+                        LOG.debug("[ClaudeSDKToolWindow] 新 session 已创建，可以安全删除旧 session 文件");
+                        future.complete(null);
+                    } catch (Exception e) {
+                        LOG.error("[ClaudeSDKToolWindow] 创建新 session 失败: " + e.getMessage(), e);
+                        // 传播异常，阻止后续的文件删除操作
+                        future.completeExceptionally(e);
+                    }
+                    return future;
                 });
             } else {
-                LOG.info("[ClaudeSDKToolWindow] 删除的不是当前 session，直接返回");
+                LOG.debug("[ClaudeSDKToolWindow] 删除的不是当前 session，直接返回");
                 // 不是当前 session，直接返回完成的 Future
                 return CompletableFuture.completedFuture(null);
             }
