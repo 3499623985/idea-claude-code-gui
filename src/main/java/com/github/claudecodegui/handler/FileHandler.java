@@ -12,6 +12,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -81,13 +82,12 @@ public class FileHandler extends BaseMessageHandler {
                     }
                 }
 
-                // 优先使用当前会话的工作目录
-                String basePath = context.getSession() != null &&
-                                  context.getSession().getCwd() != null &&
-                                  !context.getSession().getCwd().isEmpty()
-                    ? context.getSession().getCwd()
-                    : (context.getProject().getBasePath() != null ?
-                       context.getProject().getBasePath() : System.getProperty("user.home"));
+                // 始终使用项目根目录，确保搜索范围限制在项目内
+                String basePath = context.getProject().getBasePath();
+                if (basePath == null || basePath.isEmpty()) {
+                    LOG.warn("[FileHandler] Project base path is null, skipping file search");
+                    return;
+                }
 
                 List<JsonObject> files = new ArrayList<>();
 
@@ -371,35 +371,106 @@ public class FileHandler extends BaseMessageHandler {
     }
 
     /**
-     * 判断是否应该跳过文件
+     * 应该忽略的目录/文件列表
+     */
+    private static final Set<String> IGNORED_NAMES = Set.of(
+        // 版本控制
+        ".git",
+        ".svn",
+        ".hg",
+        ".bzr",
+        // IDE 配置
+        ".idea",
+        ".vscode",
+        ".eclipse",
+        ".settings",
+        ".intellijPlatform",
+        ".project",
+        ".classpath",
+        ".factorypath",
+        ".apt_generated",
+        ".sts4-cache",
+        ".springBeans",
+        "nbproject",
+        ".nb-gradle",
+        // 构建产物/依赖
+        "node_modules",
+        "target",
+        "build",
+        "dist",
+        "out",
+        "bin",
+        ".gradle",
+        "vendor",
+        "bower_components",
+        "jspm_packages",
+        ".pnp",
+        ".pnp.js",
+        // 缓存/临时文件
+        "__pycache__",
+        ".cache",
+        ".npm",
+        ".yarn",
+        ".parcel-cache",
+        ".turbo",
+        ".sass-cache",
+        ".eslintcache",
+        ".stylelintcache",
+        ".tsbuildinfo",
+        ".temp",
+        ".tmp",
+        "tmp",
+        "temp",
+        // 系统文件
+        ".DS_Store",
+        "Thumbs.db",
+        "desktop.ini",
+        ".Spotlight-V100",
+        ".Trashes",
+        "ehthumbs.db",
+        // 框架特定
+        ".next",
+        ".nuxt",
+        ".output",
+        ".docusaurus",
+        ".serverless",
+        ".vercel",
+        ".netlify",
+        // 测试覆盖率
+        "coverage",
+        ".nyc_output",
+        "htmlcov",
+        ".pytest_cache",
+        ".tox",
+        ".nox",
+        ".hypothesis",
+        // 日志
+        "logs",
+        // 环境配置
+        ".env.local",
+        ".env.development.local",
+        ".env.test.local",
+        ".env.production.local",
+        // 其他
+        ".sandbox",
+        ".claude",
+        ".kotlin",
+        ".metals",
+        ".bloop"
+    );
+
+    /**
+     * 判断是否应该跳过文件/目录
      */
     private boolean shouldSkipFile(String name) {
-        return name.equals(".git") ||
-               name.equals(".svn") ||
-               name.equals(".hg") ||
-               name.equals("node_modules") ||
-               name.equals("target") ||
-               name.equals("build") ||
-               name.equals("dist") ||
-               name.equals("out") ||
-               name.equals("__pycache__") ||
-               name.equals(".DS_Store") ||
-               name.equals(".idea");
+        return IGNORED_NAMES.contains(name);
     }
 
     /**
-     * 判断是否应该跳过目录
+     * 判断是否应该跳过目录（递归搜索时使用）
      */
     private boolean shouldSkipDirectory(String name) {
-        return name.equals(".git") ||
-               name.equals(".svn") ||
-               name.equals(".hg") ||
-               name.equals("node_modules") ||
-               name.equals("target") ||
-               name.equals("build") ||
-               name.equals("dist") ||
-               name.equals("out") ||
-               name.equals("__pycache__");
+        return IGNORED_NAMES.contains(name);
     }
 
     /**

@@ -58,3 +58,11 @@ export const showMultiEditDiff = (
 ) => {
   sendToJava('show_multi_edit_diff', { filePath, edits, currentContent });
 };
+
+/**
+ * 请求 Java 层让 JCEF 浏览器获取焦点
+ * 用于解决拖拽文件后输入框失去焦点的问题
+ */
+export const requestFocus = () => {
+  sendBridgeEvent('request_focus');
+};

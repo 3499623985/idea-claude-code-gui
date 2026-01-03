@@ -346,6 +346,32 @@ export function useTriggerDetection() {
 
     const range = selection.getRangeAt(0);
 
+    // 特殊情况：光标直接在 contenteditable 元素上（而不是在子节点中）
+    // 这通常发生在用户删除所有内容后再输入，或者输入框为空时
+    if (range.endContainer === element) {
+      // 计算到 endOffset 位置的所有子节点的文本长度
+      let pos = 0;
+      const children = Array.from(element.childNodes);
+      for (let i = 0; i < range.endOffset && i < children.length; i++) {
+        const child = children[i];
+        if (child.nodeType === Node.TEXT_NODE) {
+          pos += child.textContent?.length || 0;
+        } else if (child.nodeType === Node.ELEMENT_NODE) {
+          const childEl = child as HTMLElement;
+          const childTag = childEl.tagName.toLowerCase();
+          if (childTag === 'br') {
+            pos += 1;
+          } else if (childEl.classList.contains('file-tag')) {
+            const filePath = childEl.getAttribute('data-file-path') || '';
+            pos += filePath.length + 1;
+          } else {
+            pos += childEl.textContent?.length || 0;
+          }
+        }
+      }
+      return pos;
+    }
+
     // 遍历 DOM 节点计算光标位置，与 getTextContent 保持一致
     let position = 0;
     let found = false;

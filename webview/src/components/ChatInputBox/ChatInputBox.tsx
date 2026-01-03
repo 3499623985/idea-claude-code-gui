@@ -9,6 +9,7 @@ import { useCompletionDropdown, useTriggerDetection } from './hooks';
 import { commandToDropdownItem, fileReferenceProvider, fileToDropdownItem, slashCommandProvider, } from './providers';
 import { getFileIcon } from '../../utils/fileIcons';
 import { icon_folder } from '../../utils/icons';
+import { requestFocus } from '../../utils/bridge';
 import './styles.css';
 
 // 防抖函数工具
@@ -68,6 +69,7 @@ export const ChatInputBox = ({
   const [hasContent, setHasContent] = useState(false);
   const compositionTimeoutRef = useRef<number | null>(null);
   const lastCompositionEndTimeRef = useRef<number>(0);
+  const forceDetectRef = useRef(false);
 
   // 增强提示词状态
   const [isEnhancing, setIsEnhancing] = useState(false);
@@ -266,6 +268,28 @@ export const ChatInputBox = ({
       return;
     }
 
+    // 首先检查是否有任何有效的文件引用需要渲染
+    // 如果所有匹配的路径都是无效的，直接返回，不执行任何 DOM 操作
+    let hasValidReference = false;
+    for (const match of matches) {
+      const filePath = match[1];
+      const hashIndex = filePath.indexOf('#');
+      const pureFilePath = hashIndex !== -1 ? filePath.substring(0, hashIndex) : filePath;
+      const pureFileName = pureFilePath.split(/[/\\]/).pop() || pureFilePath;
+
+      if (pathMappingRef.current.has(pureFilePath) ||
+          pathMappingRef.current.has(pureFileName) ||
+          pathMappingRef.current.has(filePath)) {
+        hasValidReference = true;
+        break;
+      }
+    }
+
+    // 如果没有有效的文件引用，直接返回，保持光标位置和状态不变
+    if (!hasValidReference) {
+      return;
+    }
+
     // 构建新的 HTML 内容
     let newHTML = '';
     let lastIndex = 0;
@@ -285,8 +309,11 @@ export const ChatInputBox = ({
       const hashIndex = filePath.indexOf('#');
       const pureFilePath = hashIndex !== -1 ? filePath.substring(0, hashIndex) : filePath;
 
+      // 去除末尾斜杠（文件夹路径可能带有末尾斜杠）
+      const normalizedPath = pureFilePath.replace(/[/\\]+$/, '');
+
       // 获取纯文件名（不含行号，用于获取 ICON）
-      const pureFileName = pureFilePath.split(/[/\\]/).pop() || pureFilePath;
+      const pureFileName = normalizedPath.split(/[/\\]/).pop() || normalizedPath;
 
       // 验证路径是否为有效引用（必须在 pathMappingRef 中存在）
       // 只有用户从下拉列表中选择的文件才会被记录到 pathMappingRef
@@ -302,8 +329,10 @@ export const ChatInputBox = ({
         return;
       }
 
-      // 获取显示文件名（包含行号，用于显示）
-      const displayFileName = filePath.split(/[/\\]/).pop() || filePath;
+      // 获取显示文件名（去除末尾斜杠后提取最后一部分）
+      // 如果有行号，保留行号部分
+      const lineNumberPart = hashIndex !== -1 ? filePath.substring(hashIndex) : '';
+      const displayFileName = pureFileName + lineNumberPart;
 
       // 判断是文件还是目录（使用纯文件名）
       const isDirectory = !pureFileName.includes('.');
@@ -378,8 +407,8 @@ export const ChatInputBox = ({
           selection.removeAllRanges();
           selection.addRange(range);
         }
-      } catch (e) {
-        // 忽略光标恢复错误
+      } catch {
+        // ignore cursor restore error
       }
     }
 
@@ -497,11 +526,18 @@ export const ChatInputBox = ({
    * 检测并处理补全触发（优化：只在输入 @ 或 / 时才启动检测）
    */
   const detectAndTriggerCompletion = useCallback(() => {
-    if (!editableRef.current) return;
+    if (!editableRef.current) {
+      return;
+    }
 
     // 组合输入期间不进行补全检测，避免干扰 IME 上屏和下划线状态
-    if (isComposing) {
+    // 但如果设置了强制检测标志，则跳过此检查
+    if (isComposing && !forceDetectRef.current) {
       return;
+    }
+    // 重置强制检测标志
+    if (forceDetectRef.current) {
+      forceDetectRef.current = false;
     }
 
     // 如果刚刚渲染了文件标签,跳过这次补全检测
@@ -537,7 +573,9 @@ export const ChatInputBox = ({
 
     // 获取触发位置
     const position = getTriggerPosition(editableRef.current, trigger.start);
-    if (!position) return;
+    if (!position) {
+      return;
+    }
 
     // 根据触发符号打开对应的补全
     if (trigger.trigger === '@') {
@@ -590,8 +628,20 @@ export const ChatInputBox = ({
     // 调整高度
     adjustHeight();
 
+    // 安全检查：如果文本以 @ 或 / 结尾（触发字符），且是纯 ASCII，
+    // 说明用户可能已经切换到英文输入，应该触发补全检测
+    // 这是为了处理某些输入法在切换到英文模式时不触发 compositionend 的情况
+    const lastChar = text.slice(-1);
+    const shouldForceDetect = (lastChar === '@' || lastChar === '/') && /^[\x00-\x7F]*$/.test(lastChar);
+
     // 组合输入期间不触发补全检测，待组合结束后统一处理
-    if (!isComposing) {
+    // 但如果检测到触发字符，强制触发补全检测
+    if (!isComposing || shouldForceDetect) {
+      // 如果是强制检测，设置强制检测标志并重置 isComposing 状态
+      if (shouldForceDetect && isComposing) {
+        forceDetectRef.current = true;
+        setIsComposing(false);
+      }
       debouncedDetectCompletion();
     }
 
@@ -1336,21 +1386,39 @@ export const ChatInputBox = ({
       }
     }
 
-    // 如果有图片文件，不处理文本
+    // 如果有图片文件，不处理文本，但恢复焦点
     if (hasImageFile) {
+      setTimeout(() => {
+        editableRef.current?.focus();
+      }, 50);
       return;
     }
 
     // 没有图片文件，处理文本（文件路径或其他文本）
     if (text && text.trim()) {
+      // 去掉 file: 前缀（IDE 拖拽可能带有此前缀）
+      let cleanText = text;
+      if (cleanText.startsWith('file:')) {
+        cleanText = cleanText.substring(5);
+      }
+      // 提取纯路径（去掉可能的 @ 前缀）
+      const purePath = cleanText.startsWith('@') ? cleanText.substring(1) : cleanText;
+      // 提取文件名
+      const fileName = purePath.split(/[/\\]/).pop() || purePath;
+
+      // 注册路径映射，使 renderFileTags 能够识别并渲染为标签
+      pathMappingRef.current.set(purePath, purePath);
+      pathMappingRef.current.set(fileName, purePath);
+
       // 自动添加 @ 前缀（如果还没有），并添加空格以触发渲染
-      const textToInsert = (text.startsWith('@') ? text : `@${text}`) + ' ';
+      const textToInsert = (cleanText.startsWith('@') ? cleanText : `@${cleanText}`) + ' ';
 
       // 获取当前光标位置
       const selection = window.getSelection();
       if (selection && selection.rangeCount > 0 && editableRef.current) {
         // 确保光标在输入框内
-        if (editableRef.current.contains(selection.anchorNode)) {
+        const isInEditable = editableRef.current.contains(selection.anchorNode);
+        if (isInEditable) {
           // 使用现代 API 插入文本
           const range = selection.getRangeAt(0);
           range.deleteContents();
@@ -1364,7 +1432,6 @@ export const ChatInputBox = ({
           selection.addRange(range);
         } else {
           // 光标不在输入框内，追加到末尾
-          // 使用 appendChild 而不是 innerText，避免破坏已有的文件标签
           const textNode = document.createTextNode(textToInsert);
           editableRef.current.appendChild(textNode);
 
@@ -1393,10 +1460,15 @@ export const ChatInputBox = ({
       adjustHeight();
       onInput?.(newText);
 
-      // 立即渲染文件标签（不需要等待空格）
+      // 立即渲染文件标签
       setTimeout(() => {
         renderFileTags();
+        // 请求 Java 层恢复 JCEF 浏览器焦点
+        requestFocus();
       }, 50);
+    } else {
+      // 即使没有文本，也恢复焦点
+      requestFocus();
     }
   }, [generateId, getTextContent, renderFileTags, fileCompletion, commandCompletion, adjustHeight, onInput]);
 
@@ -1462,6 +1534,15 @@ export const ChatInputBox = ({
     // 注册全局函数以接收 Java 传递的文件路径
     (window as any).handleFilePathFromJava = (filePath: string) => {
       if (!editableRef.current) return;
+
+      // 提取纯路径（去掉可能的 @ 前缀）
+      const purePath = filePath.startsWith('@') ? filePath.substring(1) : filePath;
+      // 提取文件名
+      const fileName = purePath.split(/[/\\]/).pop() || purePath;
+
+      // 注册路径映射，使 renderFileTags 能够识别并渲染为标签
+      pathMappingRef.current.set(purePath, purePath);
+      pathMappingRef.current.set(fileName, purePath);
 
       // 插入文件路径到输入框（自动添加 @ 前缀），并添加空格以触发渲染
       const pathToInsert = (filePath.startsWith('@') ? filePath : `@${filePath}`) + ' ';
