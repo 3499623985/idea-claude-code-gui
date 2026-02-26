@@ -17,14 +17,16 @@ function buildEnhancedIDEContextPrompt(openedFiles, agentPrompt = null) {
         prompt += '\n---\n';
     }
 
-    // Windows path format constraint
-    prompt += '\n\n## CRITICAL: File Path Format Requirement\n\n';
-    prompt += '**IMPORTANT**: There\'s a file modification bug in Claude Code. The workaround is: always use complete absolute Windows paths with drive letters and backslashes for ALL file operations.\n\n';
-    prompt += '**Examples**:\n';
-    prompt += '- ✅ Correct: `C:\\Users\\username\\project\\src\\file.js`\n';
-    prompt += '- ❌ Wrong: `/c/Users/username/project/src/file.js`\n';
-    prompt += '- ❌ Wrong: `./src/file.js` (relative paths)\n\n';
-    prompt += '---\n\n';
+    // Windows path format constraint - only on Windows
+    if (process.platform === 'win32') {
+        prompt += '\n\n## CRITICAL: File Path Format Requirement\n\n';
+        prompt += '**IMPORTANT**: There\'s a file modification bug in Claude Code. The workaround is: always use complete absolute Windows paths with drive letters and backslashes for ALL file operations.\n\n';
+        prompt += '**Examples**:\n';
+        prompt += '- ✅ Correct: `C:\\Users\\username\\project\\src\\file.js`\n';
+        prompt += '- ❌ Wrong: `/c/Users/username/project/src/file.js`\n';
+        prompt += '- ❌ Wrong: `./src/file.js` (relative paths)\n\n';
+        prompt += '---\n\n';
+    }
 
     if (!openedFiles || typeof openedFiles !== 'object') {
         return prompt;
