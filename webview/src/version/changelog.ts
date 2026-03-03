@@ -13,6 +13,46 @@ export interface ChangelogEntry {
 
 export const CHANGELOG_DATA: ChangelogEntry[] = [
   {
+    version: '0.2.5',
+    date: '2026-03-04',
+    content: {
+      en: `✨ Features
+- Register IDEA keyboard shortcuts for chat tool window: Ctrl+C/X/V/Enter, right-click context menu, clipboard handler via JS bridge (#541) #gadfly3173
+- Persist chat input attachments across view switches: save/restore via localStorage with 2MB limit (#542) #hpstream
+- Add SDK update functionality with uninstall-reinstall strategy and progress feedback
+- Increase Codex maxTurns from 20 to 200 for long-running tasks
+
+🐛 Fixes
+- Prevent UI freeze when opening settings on macOS in Codex mode: singleton NodeDetector, async handler offloading, in-flight dedup (#543) #gadfly3173
+- Restore Claude slash-command skill discovery for plugin skills: multi-directory traversal, plugin manifest resolution, context-aware filtering (#551) #gadfly3173
+- Harden skill discovery against path traversal and resource exhaustion: plugin ID validation, traversal depth limits, YAML alias limits
+- Improve async robustness and fix stale closure in DependencySection: 30s timeout, binary validation, CompletableFuture tracking
+- Harden WebView bridge security and context menu accessibility: JS function name validation, extended string escaping, clipboard rate limiting, ARIA roles
+
+🔧 Improvements
+- Optimize SVG icon with CSS classes and simplified paths
+- Stabilize attachment callbacks with useCallback
+- Replace remote banner image with local asset`,
+      zh: `✨ Features
+- 注册 IDEA 键盘快捷键到聊天工具窗口：Ctrl+C/X/V/Enter、右键上下文菜单、JS 桥接剪贴板读写 (#541) #gadfly3173
+- 切换页面后保留输入框图片附件：localStorage 保存/恢复，2MB 大小限制 (#542) #hpstream
+- 新增 SDK 更新功能（卸载后重装策略），支持进度反馈
+- Codex maxTurns 从 20 提升到 200，支持长时间任务
+
+🐛 Fixes
+- 修复 macOS 下 Codex 模式打开设置时 UI 冻结：NodeDetector 单例共享缓存、异步化、并发去重 (#543) #gadfly3173
+- 恢复 Claude 斜杠命令对插件 Skills 的发现：多目录遍历、插件清单解析、上下文感知过滤 (#551) #gadfly3173
+- 加固 Skill 发现路径遍历和资源耗尽防护：插件 ID 验证、遍历深度限制、YAML 别名限制
+- 改进异步健壮性并修复 DependencySection 闭包过期：30 秒超时、二进制名验证、CompletableFuture 追踪
+- 加固 WebView 桥接安全和上下文菜单无障碍：JS 函数名验证、扩展字符串转义、剪贴板限流、ARIA 角色
+
+🔧 Improvements
+- 优化 SVG 图标：CSS 类和简化路径
+- useCallback 稳定附件回调，避免不必要重渲染
+- 用本地资源替换远程 Banner 图片`,
+    },
+  },
+  {
     version: '0.2.4',
     date: '2026-03-02',
     content: {

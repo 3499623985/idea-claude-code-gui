@@ -1,3 +1,47 @@
+##### **2026年3月4日（v0.2.5）**
+
+English:
+
+✨ Features
+- Register IDEA keyboard shortcuts for chat tool window: Ctrl+C/X/V/Enter actions scoped to CCG window, right-click context menu with copy/cut/paste/newline, clipboard read/write handler via JS bridge (#541) #gadfly3173
+- Persist chat input attachments across view switches: save/restore images via localStorage when switching to history or settings views, 2MB size limit with quota error handling (#542) #hpstream
+- Add SDK update functionality with uninstall-reinstall strategy: update_dependency handler, dedicated UI state and progress feedback, i18n translations for 8 locales
+- Increase Codex maxTurns from 20 to 200 for long-running tasks
+
+🐛 Fixes
+- Prevent UI freeze when opening settings on macOS in Codex mode: convert NodeDetector to singleton with shared cache, offload handleGetNodePath/handleSetNodePath to background threads, add in-flight dedup for concurrent detection (#543) #gadfly3173
+- Restore Claude slash-command skill discovery for plugin skills: multi-directory upward traversal, read installed_plugins.json for manifest resolution, context-aware ConditionalSkillFilter, source metadata in command descriptions (#551) #gadfly3173
+- Harden skill discovery against path traversal and resource exhaustion: plugin ID validation, traversal depth limits, toRealPath() over normalize(), disable YAML alias expansion, JSON file size and glob complexity limits
+- Improve async robustness and fix stale closure in DependencySection: 30s detection timeout, Node.js binary name validation, CompletableFuture lazy-init tracking, .exceptionally() handlers on all async chains
+- Harden WebView bridge security and improve context menu accessibility: JS function name regex validation, extended string escaping (tab/backspace/form-feed/NEL/script breakout), clipboard read rate limiting (200ms) and write size cap (10MB), ARIA roles and keyboard navigation
+
+🔧 Improvements
+- Optimize SVG icon with CSS classes and simplified paths
+- Stabilize attachment persistence callbacks with useCallback to prevent unnecessary re-renders
+- Replace remote banner image with local asset
+
+中文：
+
+✨ Features
+- 注册 IDEA 键盘快捷键到聊天工具窗口：Ctrl+C/X/V/Enter 限定在 CCG 窗口范围，右键上下文菜单支持复制/剪切/粘贴/换行，通过 JS 桥接实现剪贴板读写 (#541) #gadfly3173
+- 切换页面后保留输入框图片附件：通过 localStorage 保存/恢复附件数据，支持 2MB 大小限制和配额超限处理 (#542) #hpstream
+- 新增 SDK 更新功能（卸载后重装策略）：update_dependency 处理器，独立的 UI 状态和进度反馈，支持 8 种语言国际化
+- 将 Codex maxTurns 从 20 提升到 200，支持长时间运行的任务
+
+🐛 Fixes
+- 修复 macOS 下 Codex 模式打开设置时 UI 冻结：NodeDetector 改为单例共享缓存，handleGetNodePath/handleSetNodePath 异步化到后台线程，并发检测去重 (#543) #gadfly3173
+- 恢复 Claude 斜杠命令对插件 Skills 的发现：多目录向上遍历，读取 installed_plugins.json 解析清单，上下文感知 ConditionalSkillFilter，命令描述中显示来源 (#551) #gadfly3173
+- 加固 Skill 发现的路径遍历和资源耗尽防护：插件 ID 验证、遍历深度限制、使用 toRealPath() 替代 normalize()、禁用 YAML 别名展开、JSON 文件大小和 glob 复杂度限制
+- 改进异步健壮性并修复 DependencySection 闭包过期：30 秒检测超时、Node.js 二进制名验证、CompletableFuture 懒初始化追踪、所有异步链添加 .exceptionally() 处理
+- 加固 WebView 桥接安全和上下文菜单无障碍：JS 函数名正则验证、扩展字符串转义（tab/backspace/form-feed/NEL/script 突破）、剪贴板读取限流(200ms)和写入大小上限(10MB)、ARIA 角色和键盘导航
+
+🔧 Improvements
+- 优化 SVG 图标：使用 CSS 类和简化路径
+- 使用 useCallback 稳定附件持久化回调，避免不必要的重新渲染
+- 用本地资源替换远程 Banner 图片
+
+---
+
 ##### **2026年3月2日（v0.2.4）**
 
 English:
