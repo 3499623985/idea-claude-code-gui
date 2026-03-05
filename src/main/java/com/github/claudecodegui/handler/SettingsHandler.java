@@ -1682,7 +1682,7 @@ public class SettingsHandler extends BaseMessageHandler {
     private void handleSetSoundOnlyWhenUnfocused(String content) {
         try {
             JsonObject json = gson.fromJson(content, JsonObject.class);
-            boolean onlyWhenUnfocused = json == null || !json.has("onlyWhenUnfocused") || json.get("onlyWhenUnfocused").getAsBoolean();
+            boolean onlyWhenUnfocused = json != null && json.has("onlyWhenUnfocused") && json.get("onlyWhenUnfocused").getAsBoolean();
 
             settingsService.setSoundOnlyWhenUnfocused(onlyWhenUnfocused);
             LOG.info("[SettingsHandler] Set sound only when unfocused: " + onlyWhenUnfocused);
