@@ -324,6 +324,7 @@ const SettingsView = ({
 
   // 提示音配置
   const [soundNotificationEnabled, setSoundNotificationEnabled] = useState<boolean>(false);
+  const [soundOnlyWhenUnfocused, setSoundOnlyWhenUnfocused] = useState<boolean>(false);
   const [selectedSound, setSelectedSound] = useState<string>('default');
   const [customSoundPath, setCustomSoundPath] = useState<string>('');
 
@@ -389,6 +390,7 @@ const SettingsView = ({
     onStreamingEnabledChangeProp,
     onSendShortcutChangeProp,
     setSoundNotificationEnabled,
+    setSoundOnlyWhenUnfocused,
     setSelectedSound,
     setCustomSoundPath,
   });
@@ -567,6 +569,13 @@ const SettingsView = ({
     sendToJava(`set_sound_notification_enabled:${JSON.stringify(payload)}`);
   };
 
+  // Sound only-when-unfocused toggle change handler
+  const handleSoundOnlyWhenUnfocusedChange = (enabled: boolean) => {
+    setSoundOnlyWhenUnfocused(enabled);
+    const payload = { onlyWhenUnfocused: enabled };
+    sendToJava(`set_sound_only_when_unfocused:${JSON.stringify(payload)}`);
+  };
+
   // Selected sound change handler
   const handleSelectedSoundChange = (soundId: string) => {
     setSelectedSound(soundId);
@@ -738,6 +747,8 @@ const SettingsView = ({
               onDiffExpandedByDefaultChange={setDiffExpandedByDefault}
               soundNotificationEnabled={soundNotificationEnabled}
               onSoundNotificationEnabledChange={handleSoundNotificationEnabledChange}
+              soundOnlyWhenUnfocused={soundOnlyWhenUnfocused}
+              onSoundOnlyWhenUnfocusedChange={handleSoundOnlyWhenUnfocusedChange}
               selectedSound={selectedSound}
               onSelectedSoundChange={handleSelectedSoundChange}
               customSoundPath={customSoundPath}
@@ -772,7 +783,7 @@ const SettingsView = ({
 
           {/* SDK dependency management */}
           <div style={{ display: currentTab === 'dependencies' ? 'block' : 'none' }}>
-            <DependencySection addToast={addToast} />
+            <DependencySection addToast={addToast} isActive={currentTab === 'dependencies'} />
           </div>
 
           {/* Usage statistics */}
