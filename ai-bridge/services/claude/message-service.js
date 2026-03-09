@@ -76,40 +76,73 @@ async function ensureBedrockSdk() {
 // Key: sessionId, Value: query result object
 const activeQueryResults = new Map();
 
+// ========== Tool categories for permission control ==========
+
+// READ_ONLY tools: auto-allowed in plan mode and default mode (no side effects)
+const READ_ONLY_TOOLS = new Set([
+  'Glob',           // Find files by pattern
+  'Grep',           // Search file contents
+  'Read',           // Read files/images/PDFs
+  'WebFetch',       // Fetch URL content
+  'WebSearch',      // Search the web
+  'TodoWrite',      // Manage task checklist
+  'TaskStop',       // Stop background task
+  'TaskOutput',     // Read task output
+  'ListMcpResourcesTool',   // List MCP resources
+  'ReadMcpResourceTool',    // Read MCP resource
+  'ExitPlanMode',   // Exit plan mode (triggers approval dialog)
+]);
+
+// AUTO_ALLOW_TOOLS: Tools that are always allowed without prompting
+const AUTO_ALLOW_TOOLS = new Set([
+  'ToolSearch',       // Search/select deferred tools
+  'StructuredOutput', // Return structured JSON output
+  'EnterPlanMode',    // Enter planning mode
+  'EnterWorktree',    // Create isolated git worktree
+  'TaskCreate',       // Create a task in task list
+  'TaskGet',          // Get a task by ID
+  'TaskUpdate',       // Update a task
+  'TaskList',         // List all tasks
+  'CronCreate',       // Schedule a recurring prompt
+  'CronDelete',       // Cancel a scheduled cron job
+  'CronList',         // List active cron jobs
+]);
+
+// EDIT tools: auto-allowed in acceptEdits mode
+const EDIT_TOOLS = new Set([
+  'Edit',           // Modify file contents
+  'Write',          // Create/overwrite files
+  'NotebookEdit',   // Edit Jupyter notebook cells
+]);
+
+// EXECUTION tools: always require permission (except bypassPermissions mode)
+const EXECUTION_TOOLS = new Set([
+  'Bash',           // Execute shell commands
+]);
+
+// Tools auto-approved in acceptEdits mode (EDIT tools + safe file operations)
 const ACCEPT_EDITS_AUTO_APPROVE_TOOLS = new Set([
-  'Write',
-  'Edit',
-  'MultiEdit',
+  ...EDIT_TOOLS,
+  'MultiEdit',      // Batch edit operations
   'CreateDirectory',
   'MoveFile',
   'CopyFile',
   'Rename'
 ]);
 
-// Tools allowed in plan mode (read-only tools + planning tools + ExitPlanMode)
+// Tools allowed in plan mode:
+// - All READ_ONLY tools
+// - All AUTO_ALLOW_TOOLS
+// - TodoWrite, AskUserQuestion, ExitPlanMode for planning workflow
+// - Task for exploration agents
+// - Edit/Write for plan file only (handled separately in hook)
 const PLAN_MODE_ALLOWED_TOOLS = new Set([
-  // Read-only tools
-  'Read', 'Glob', 'Grep', 'WebFetch', 'WebSearch',
-  'ListMcpResources', 'ListMcpResourcesTool',
-  'ReadMcpResource', 'ReadMcpResourceTool',
-  // Planning tools
-  'TodoWrite', 'Skill', 'TaskOutput',
-  'Task', // Allow Task for exploration agents
-  // Note: Write, Edit, Bash are NOT in this set - they are handled separately
-  // in the PreToolUse hook with explicit canUseTool() permission checks
-  'AskUserQuestion', // Allow AskUserQuestion for asking user during planning
-  'EnterPlanMode', // Allow EnterPlanMode
-  'ExitPlanMode', // Allow ExitPlanMode to exit plan mode
-  // MCP tools
-  'mcp__ace-tool__search_context',
-  'mcp__context7__resolve-library-id',
-  'mcp__context7__query-docs',
-  'mcp__conductor__GetWorkspaceDiff',
-  'mcp__conductor__GetTerminalOutput',
-  'mcp__conductor__AskUserQuestion',
-  'mcp__conductor__DiffComment',
-  'mcp__time__get_current_time',
-  'mcp__time__convert_time'
+  ...READ_ONLY_TOOLS,
+  ...AUTO_ALLOW_TOOLS,
+  // Planning workflow tools
+  'AskUserQuestion',  // Ask user for clarification
+  'Task',             // Allow Task for exploration agents
+  'Skill',            // Allow skills during planning
 ]);
 
 // ========== Auto-retry configuration for transient API errors ==========
@@ -195,55 +228,71 @@ async function waitForClaudeProjectSessionFile(sessionId, cwd, timeoutMs = 1500,
 // Tools that require user interaction even in bypassPermissions mode
 const INTERACTIVE_TOOLS = new Set(['AskUserQuestion']);
 
+// Plan file name (matches CLI convention)
+const PLAN_FILE_NAME = 'PLAN.md';
+
+/**
+ * Check if a file path is the plan file
+ * @param {string} filePath - The file path to check
+ * @param {string} cwd - Current working directory
+ * @returns {boolean} - True if the path points to the plan file
+ */
+function isPlanFilePath(filePath, cwd) {
+  if (!filePath || typeof filePath !== 'string') return false;
+  const workingDir = cwd || process.cwd();
+  // Normalize paths for comparison
+  const normalizedPath = filePath.replace(/\\/g, '/').toLowerCase();
+  const normalizedCwd = workingDir.replace(/\\/g, '/').toLowerCase();
+  // Check if the path ends with PLAN.md (in project root)
+  if (normalizedPath.endsWith('/plan.md') || normalizedPath === 'plan.md') {
+    // Verify it's in the project root
+    if (normalizedPath.startsWith(normalizedCwd)) return true;
+    if (!normalizedPath.includes('/')) return true; // Relative path like "PLAN.md"
+  }
+  return false;
+}
+
 function shouldAutoApproveTool(permissionMode, toolName) {
   if (!toolName) return false;
+  // Tools with checkPermissions returning "allow" are always auto-approved
+  if (AUTO_ALLOW_TOOLS.has(toolName)) return true;
   // Interactive tools always need user input, never auto-approve
   if (INTERACTIVE_TOOLS.has(toolName)) return false;
+  // bypassPermissions: auto-approve all tools except interactive ones
   if (permissionMode === 'bypassPermissions') return true;
+  // acceptEdits: auto-approve EDIT tools
   if (permissionMode === 'acceptEdits') return ACCEPT_EDITS_AUTO_APPROVE_TOOLS.has(toolName);
   return false;
 }
 
-function createPreToolUseHook(permissionMode) {
+/**
+ * Create PreToolUse hook for permission control
+ * @param {string} permissionMode - The permission mode (default, plan, acceptEdits, bypassPermissions, dontAsk)
+ * @param {string} cwd - Working directory (for plan file detection)
+ * @returns {Function} - PreToolUse hook function
+ */
+function createPreToolUseHook(permissionMode, cwd = null) {
   let currentPermissionMode = (!permissionMode || permissionMode === '') ? 'default' : permissionMode;
+  const workingDirectory = cwd || process.cwd();
 
   return async (input) => {
     const toolName = input?.tool_name;
+    const toolInput = input?.tool_input;
     console.log('[PERM_DEBUG] PreToolUse hook called:', toolName, 'mode:', currentPermissionMode);
 
-    // Handle plan mode: allow read-only tools, special handling for ExitPlanMode
+    // ========== PLAN MODE ==========
     if (currentPermissionMode === 'plan') {
+      // AskUserQuestion: defer to canUseTool for collecting user answers
       if (toolName === 'AskUserQuestion') {
-        console.log('[PERM_DEBUG] AskUserQuestion called in plan mode, deferring to canUseTool for answers...');
+        console.log('[PERM_DEBUG] AskUserQuestion called in plan mode, deferring to canUseTool...');
         return { decision: 'approve' };
       }
 
-      // Edit / Write / Bash: allow in plan mode but still ask user permission (same as default mode behavior)
-      if (toolName === 'Edit' || toolName === 'Write' || toolName === 'Bash') {
-        console.log(`[PERM_DEBUG] ${toolName} called in plan mode, requesting permission...`);
-        try {
-          const result = await canUseTool(toolName, input?.tool_input);
-          if (result?.behavior === 'allow') {
-            return { decision: 'approve', updatedInput: result.updatedInput ?? input?.tool_input };
-          }
-          return {
-            decision: 'block',
-            reason: result?.message || 'Permission denied'
-          };
-        } catch (error) {
-          console.error(`[PERM_DEBUG] ${toolName} permission error:`, error?.message);
-          return {
-            decision: 'block',
-            reason: 'Permission check failed: ' + (error?.message || String(error))
-          };
-        }
-      }
-
-      // Special handling for ExitPlanMode: request plan approval from user
+      // ExitPlanMode: request plan approval from user
       if (toolName === 'ExitPlanMode') {
         console.log('[PERM_DEBUG] ExitPlanMode called in plan mode, requesting approval...');
         try {
-          const result = await requestPlanApproval(input?.tool_input);
+          const result = await requestPlanApproval(toolInput);
           if (result?.approved) {
             const nextMode = result.targetMode || 'default';
             currentPermissionMode = nextMode;
@@ -251,7 +300,7 @@ function createPreToolUseHook(permissionMode) {
             return {
               decision: 'approve',
               updatedInput: {
-                ...input.tool_input,
+                ...toolInput,
                 approved: true,
                 targetMode: nextMode
               }
@@ -271,14 +320,74 @@ function createPreToolUseHook(permissionMode) {
         }
       }
 
-      // Allow read-only tools in plan mode
+      // Edit/Write on plan file: ALLOW in plan mode (plan file exception)
+      if (toolName === 'Edit' || toolName === 'Write') {
+        const filePath = toolInput?.file_path || toolInput?.path;
+        if (isPlanFilePath(filePath, workingDirectory)) {
+          console.log('[PERM_DEBUG] Allowing Edit/Write on plan file in plan mode:', filePath);
+          return { decision: 'approve' };
+        }
+        // Non-plan file edits in plan mode: request permission (will likely be denied)
+        console.log(`[PERM_DEBUG] ${toolName} on non-plan file in plan mode, requesting permission...`);
+        try {
+          const result = await canUseTool(toolName, toolInput);
+          if (result?.behavior === 'allow') {
+            return { decision: 'approve', updatedInput: result.updatedInput ?? toolInput };
+          }
+          return {
+            decision: 'block',
+            reason: result?.message || `Cannot edit non-plan files in plan mode. Only ${PLAN_FILE_NAME} can be edited.`
+          };
+        } catch (error) {
+          console.error(`[PERM_DEBUG] ${toolName} permission error:`, error?.message);
+          return {
+            decision: 'block',
+            reason: 'Permission check failed: ' + (error?.message || String(error))
+          };
+        }
+      }
+
+      // Bash: require explicit permission in plan mode
+      if (toolName === 'Bash') {
+        console.log('[PERM_DEBUG] Bash called in plan mode, requesting permission...');
+        try {
+          const result = await canUseTool(toolName, toolInput);
+          if (result?.behavior === 'allow') {
+            return { decision: 'approve', updatedInput: result.updatedInput ?? toolInput };
+          }
+          return {
+            decision: 'block',
+            reason: result?.message || 'Shell commands are not allowed in plan mode'
+          };
+        } catch (error) {
+          console.error('[PERM_DEBUG] Bash permission error:', error?.message);
+          return {
+            decision: 'block',
+            reason: 'Permission check failed: ' + (error?.message || String(error))
+          };
+        }
+      }
+
+      // Read-only tools: auto-allow in plan mode
       if (PLAN_MODE_ALLOWED_TOOLS.has(toolName)) {
         console.log('[PERM_DEBUG] Allowing read-only tool in plan mode:', toolName);
         return { decision: 'approve' };
       }
 
-      // Also allow MCP tools that start with 'mcp__' and are read-only
-      if (toolName?.startsWith('mcp__') && !toolName.includes('Write') && !toolName.includes('Edit')) {
+      // MCP tools that are read-only: allow in plan mode
+      if (toolName?.startsWith('mcp__')) {
+        // Heuristic: MCP tools with "read", "list", "get", "search", "query" are likely read-only
+        const readOnlyPatterns = ['read', 'list', 'get', 'search', 'query', 'resolve', 'fetch'];
+        const writePatterns = ['write', 'edit', 'create', 'delete', 'update', 'execute', 'run'];
+        const toolLower = toolName.toLowerCase();
+
+        if (writePatterns.some(p => toolLower.includes(p))) {
+          console.log('[PERM_DEBUG] Blocking write MCP tool in plan mode:', toolName);
+          return {
+            decision: 'block',
+            reason: `MCP tool "${toolName}" writes to system, not allowed in plan mode`
+          };
+        }
         console.log('[PERM_DEBUG] Allowing MCP read tool in plan mode:', toolName);
         return { decision: 'approve' };
       }
@@ -287,23 +396,48 @@ function createPreToolUseHook(permissionMode) {
       console.log('[PERM_DEBUG] Blocking tool in plan mode:', toolName);
       return {
         decision: 'block',
-        reason: `Tool "${toolName}" is not allowed in plan mode. Only read-only tools are permitted. Use ExitPlanMode to exit plan mode.`
+        reason: `Tool "${toolName}" is not allowed in plan mode. Only read-only tools and ${PLAN_FILE_NAME} edits are permitted. Use ExitPlanMode to exit plan mode.`
       };
     }
 
+    // ========== DONT_ASK MODE ==========
+    if (currentPermissionMode === 'dontAsk') {
+      // In dontAsk mode, deny any tool that would require a permission prompt
+      // unless it's auto-approved (read-only tools or tools with checkPermissions returning "allow")
+      if (READ_ONLY_TOOLS.has(toolName) || AUTO_ALLOW_TOOLS.has(toolName)) {
+        console.log('[PERM_DEBUG] Allowing auto-approved tool in dontAsk mode:', toolName);
+        return { decision: 'approve' };
+      }
+      // Interactive tools still work in dontAsk mode
+      if (toolName === 'AskUserQuestion') {
+        return { decision: 'approve' };
+      }
+      // All other tools are denied without prompting
+      console.log('[PERM_DEBUG] Denying tool in dontAsk mode (no prompt):', toolName);
+      return {
+        decision: 'block',
+        reason: `Tool "${toolName}" requires permission but dontAsk mode prevents prompts. Pre-approve the tool or switch modes.`
+      };
+    }
+
+    // ========== DEFAULT / ACCEPT_EDITS / BYPASS_PERMISSIONS MODES ==========
+
+    // AskUserQuestion: defer to canUseTool for collecting user answers
     if (toolName === 'AskUserQuestion') {
-      console.log('[PERM_DEBUG] AskUserQuestion encountered in PreToolUse, deferring to canUseTool for answers...');
+      console.log('[PERM_DEBUG] AskUserQuestion encountered in PreToolUse, deferring to canUseTool...');
       return { decision: 'approve' };
     }
 
+    // Auto-approve based on mode
     if (shouldAutoApproveTool(currentPermissionMode, toolName)) {
       console.log('[PERM_DEBUG] Auto-approve tool:', toolName, 'mode:', currentPermissionMode);
       return { decision: 'approve' };
     }
 
+    // Default: request permission via canUseTool
     console.log('[PERM_DEBUG] Calling canUseTool...');
     try {
-      const result = await canUseTool(toolName, input?.tool_input);
+      const result = await canUseTool(toolName, toolInput);
       console.log('[PERM_DEBUG] canUseTool returned:', result?.behavior);
 
       if (result?.behavior === 'allow') {
@@ -674,7 +808,7 @@ export async function sendMessage(message, resumeSessionId = null, cwd = null, p
       canUseTool: shouldUseCanUseTool ? canUseTool : undefined,
       hooks: {
         PreToolUse: [{
-          hooks: [createPreToolUseHook(effectivePermissionMode)]
+          hooks: [createPreToolUseHook(effectivePermissionMode, workingDirectory)]
         }]
       },
       // Don't pass pathToClaudeCodeExecutable; SDK will use its built-in cli.js
@@ -1379,7 +1513,7 @@ export async function sendMessageWithAttachments(message, resumeSessionId = null
 
     // PreToolUse hook for permission control (replaces canUseTool since it's not called in AsyncIterable mode)
     // See docs/multimodal-permission-bug.md
-    const preToolUseHook = createPreToolUseHook(normalizedPermissionMode);
+    const preToolUseHook = createPreToolUseHook(normalizedPermissionMode, workingDirectory);
 
     // Note: Per SDK docs, if no matcher is specified, the hook matches all tools.
     // We use a single global PreToolUse hook and let its internal logic decide which tools to auto-approve.
