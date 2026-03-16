@@ -480,6 +480,7 @@ const App = () => {
               {messages.length === 0 && (
                 <WelcomeScreen
                   currentProvider={currentProvider}
+                  currentModelId={selectedModel}
                   t={t}
                   onProviderChange={wrappedHandleProviderSelect}
                   onVersionClick={() => setShowChangelogDialog(true)}
