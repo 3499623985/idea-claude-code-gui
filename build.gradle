@@ -29,7 +29,7 @@ checkstyle {
     configFile = file('checkstyle.xml')
 }
 
-group = 'com.github.jetbrains-long-gui'
+group = 'com.github.jetbrains-claude-code-gui'
 version = '0.3-fix'
 
 java {
