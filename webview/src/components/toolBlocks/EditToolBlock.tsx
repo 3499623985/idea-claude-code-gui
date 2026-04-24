@@ -183,78 +183,7 @@ const EditToolBlock = ({ name, input, result, toolId }: EditToolBlockProps) => {
   };
 
   return (
-    <div style={{ margin: '12px 0' }}>
-      {/* Top Row: Buttons (Right aligned) */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '4px', paddingRight: '4px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleShowDiff(e);
-            }}
-            title={t('tools.showDiffInIdea')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '2px 6px',
-              fontSize: '11px',
-              fontFamily: 'inherit',
-              color: 'var(--text-secondary)',
-              background: 'var(--bg-tertiary)',
-              border: '1px solid var(--border-primary)',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease',
-              whiteSpace: 'nowrap',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--bg-hover)';
-              e.currentTarget.style.color = 'var(--text-primary)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'var(--bg-tertiary)';
-              e.currentTarget.style.color = 'var(--text-secondary)';
-            }}
-          >
-            <span className="codicon codicon-diff" style={{ marginRight: '4px', fontSize: '12px' }} />
-            {t('tools.diffButton')}
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleRefreshInIdea(e);
-            }}
-            title={t('tools.refreshFileInIdea')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '2px 6px',
-              fontSize: '11px',
-              fontFamily: 'inherit',
-              color: 'var(--text-secondary)',
-              background: 'var(--bg-tertiary)',
-              border: '1px solid var(--border-primary)',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--bg-hover)';
-              e.currentTarget.style.color = 'var(--text-primary)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'var(--bg-tertiary)';
-              e.currentTarget.style.color = 'var(--text-secondary)';
-            }}
-          >
-            <span className="codicon codicon-refresh" style={{ fontSize: '12px' }} />
-          </button>
-        </div>
-      </div>
-
-      <div className="task-container" style={{ margin: 0 }}>
+    <div className="task-container">
         <div className="task-header" onClick={() => setExpanded((prev) => !prev)}>
           <div className="task-title-section">
             <span className="codicon codicon-edit tool-title-icon" />
@@ -305,7 +234,24 @@ const EditToolBlock = ({ name, input, result, toolId }: EditToolBlockProps) => {
             )}
           </div>
 
-          <div className={`tool-status-indicator ${isError ? 'error' : isCompleted ? 'completed' : 'pending'}`} />
+          <div className="edit-tool-inline-actions">
+            <button
+              onClick={handleShowDiff}
+              title={t('tools.showDiffInIdea')}
+              className="edit-group-action-btn edit-group-action-btn--label"
+            >
+              <span className="codicon codicon-diff" />
+              {t('tools.diffButton')}
+            </button>
+            <button
+              onClick={handleRefreshInIdea}
+              title={t('tools.refreshFileInIdea')}
+              className="edit-group-action-btn"
+            >
+              <span className="codicon codicon-refresh" />
+            </button>
+          </div>
+          <div className={`tool-status-indicator edit-tool-status-indicator ${isError ? 'error' : isCompleted ? 'completed' : 'pending'}`} />
         </div>
 
         {expanded && (
@@ -391,7 +337,6 @@ const EditToolBlock = ({ name, input, result, toolId }: EditToolBlockProps) => {
           </div>
         </div>
         )}
-      </div>
     </div>
   );
 };

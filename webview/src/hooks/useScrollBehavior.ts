@@ -56,7 +56,13 @@ export function useScrollBehavior({
       isAutoScrollingRef.current = true;
       container.scrollTop = container.scrollHeight;
       requestAnimationFrame(() => {
-        isAutoScrollingRef.current = false;
+        const latestContainer = messagesContainerRef.current;
+        if (latestContainer && !userPausedRef.current && isUserAtBottomRef.current) {
+          latestContainer.scrollTop = latestContainer.scrollHeight;
+        }
+        requestAnimationFrame(() => {
+          isAutoScrollingRef.current = false;
+        });
       });
       return;
     }
@@ -70,7 +76,17 @@ export function useScrollBehavior({
         endElement.scrollIntoView(false);
       }
       requestAnimationFrame(() => {
-        isAutoScrollingRef.current = false;
+        const latestEndElement = messagesEndRef.current;
+        if (latestEndElement && !userPausedRef.current && isUserAtBottomRef.current) {
+          try {
+            latestEndElement.scrollIntoView({ block: 'end', behavior: 'auto' });
+          } catch {
+            latestEndElement.scrollIntoView(false);
+          }
+        }
+        requestAnimationFrame(() => {
+          isAutoScrollingRef.current = false;
+        });
       });
       return;
     }
@@ -174,6 +190,54 @@ export function useScrollBehavior({
       scrollToBottom();
     }
   }, [currentView, messages, expandedThinking, loading, streamingActive, scrollToBottom]);
+
+  useEffect(() => {
+    if (currentView !== 'chat') return;
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    let layoutRafId: number | null = null;
+    const followBottomAfterLayoutChange = () => {
+      if (layoutRafId !== null) {
+        cancelAnimationFrame(layoutRafId);
+      }
+      layoutRafId = requestAnimationFrame(() => {
+        layoutRafId = null;
+        if (userPausedRef.current || !isUserAtBottomRef.current) {
+          return;
+        }
+        scrollToBottom();
+      });
+    };
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(followBottomAfterLayoutChange);
+      resizeObserver.observe(container);
+      const firstElementChild = container.firstElementChild;
+      if (firstElementChild) {
+        resizeObserver.observe(firstElementChild);
+      }
+    }
+
+    let mutationObserver: MutationObserver | null = null;
+    if (typeof MutationObserver !== 'undefined') {
+      mutationObserver = new MutationObserver(followBottomAfterLayoutChange);
+      mutationObserver.observe(container, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+      });
+    }
+
+    return () => {
+      if (layoutRafId !== null) {
+        cancelAnimationFrame(layoutRafId);
+      }
+      resizeObserver?.disconnect();
+      mutationObserver?.disconnect();
+    };
+  }, [currentView, scrollToBottom]);
 
   // Cleanup scroll debounce on unmount
   useEffect(() => {

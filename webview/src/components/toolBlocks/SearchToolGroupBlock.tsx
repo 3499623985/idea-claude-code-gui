@@ -93,7 +93,6 @@ const SearchToolGroupBlock = ({ items }: SearchToolGroupBlockProps) => {
   const listHeight = needsScroll
     ? MAX_VISIBLE_ITEMS * ITEM_HEIGHT
     : searchItems.length * ITEM_HEIGHT;
-
   return (
     <div className="task-container">
       <div
@@ -121,9 +120,8 @@ const SearchToolGroupBlock = ({ items }: SearchToolGroupBlockProps) => {
       {expanded && (
         <div
           ref={listRef}
-          className="task-details file-list-container"
+          className={`task-details file-list-container ${needsScroll ? 'has-scrollbar-gutter' : ''}`}
           style={{
-            padding: '6px 8px',
             border: 'none',
             display: 'flex',
             flexDirection: 'column',
@@ -140,7 +138,7 @@ const SearchToolGroupBlock = ({ items }: SearchToolGroupBlockProps) => {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                padding: '4px 8px',
+                padding: 'var(--tool-list-item-padding-y) 0',
                 borderRadius: '4px',
                 minHeight: `${ITEM_HEIGHT}px`,
                 flexShrink: 0,

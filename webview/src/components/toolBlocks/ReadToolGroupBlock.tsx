@@ -110,7 +110,6 @@ const ReadToolGroupBlock = ({ items }: ReadToolGroupBlockProps) => {
   const listHeight = needsScroll
     ? MAX_VISIBLE_ITEMS * ITEM_HEIGHT
     : fileItems.length * ITEM_HEIGHT;
-
   const handleFileClick = (openPath: string, isDirectory: boolean, e: React.MouseEvent, lineStart?: number, lineEnd?: number) => {
     e.stopPropagation();
     if (!isDirectory) {
@@ -145,9 +144,8 @@ const ReadToolGroupBlock = ({ items }: ReadToolGroupBlockProps) => {
       {expanded && (
         <div
           ref={listRef}
-          className="task-details file-list-container"
+          className={`task-details file-list-container ${needsScroll ? 'has-scrollbar-gutter' : ''}`}
           style={{
-            padding: '6px 8px',
             border: 'none',
             display: 'flex',
             flexDirection: 'column',
@@ -165,7 +163,7 @@ const ReadToolGroupBlock = ({ items }: ReadToolGroupBlockProps) => {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                padding: '4px 8px',
+                padding: 'var(--tool-list-item-padding-y) 0',
                 borderRadius: '4px',
                 cursor: item.isDirectory ? 'default' : 'pointer',
                 transition: 'background-color 0.15s ease',
@@ -214,7 +212,7 @@ const ReadToolGroupBlock = ({ items }: ReadToolGroupBlockProps) => {
               {/* Status indicator */}
               <div
                 className={`tool-status-indicator ${item.isError ? 'error' : item.isCompleted ? 'completed' : 'pending'}`}
-                style={{ marginLeft: '8px' }}
+                style={{ marginLeft: 'auto' }}
               />
             </div>
           ))}

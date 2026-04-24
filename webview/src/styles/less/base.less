@@ -14,6 +14,63 @@
     --idea-editor-font-family: 'JetBrains Mono', 'Consolas', monospace;
     --idea-editor-font-size: 14px;
     --idea-editor-line-spacing: 1.5;
+    --font-scale: 0.9;
+    --message-font-size: 12.6px;
+    --message-code-font-size: 12.6px;
+    --message-small-font-size: 10.8px;
+    --message-caption-font-size: 9.9px;
+    --message-icon-font-size: 12.6px;
+    --message-large-icon-font-size: 14.4px;
+    --app-font-size-9: 8.1px;
+    --app-font-size-10: 9px;
+    --app-font-size-11: 9.9px;
+    --app-font-size-12: 10.8px;
+    --app-font-size-13: 11.7px;
+    --app-font-size-14: 12.6px;
+    --app-font-size-15: 13.5px;
+    --app-font-size-16: 14.4px;
+    --app-font-size-18: 16.2px;
+    --app-font-size-20: 18px;
+    --app-font-size-24: 21.6px;
+    --app-font-size-32: 28.8px;
+    --app-font-size-36: 32.4px;
+    --app-font-size-48: 43.2px;
+    --message-block-padding-y: 16px;
+    --message-block-padding-x: 20px;
+    --message-user-bubble-padding-y: 10px;
+    --message-user-bubble-padding-x: 14px;
+    --message-notification-padding-y: 8px;
+    --message-gap: 6px;
+    --message-header-gap: 6px;
+    --message-markdown-block-margin: 10px;
+    --message-thinking-block-margin: 16px;
+    --message-thinking-content-margin: 8px;
+    --task-block-margin-y: 12px;
+    --task-header-padding-y: 8px;
+    --task-header-padding-x: 12px;
+    --task-content-padding: 10px;
+    --tool-list-padding-y: 6px;
+    --tool-list-item-padding-y: 4px;
+    --tool-list-scrollbar-gutter: 6px;
+}
+
+:root[data-message-density='compact'] {
+    --message-block-padding-y: 7px;
+    --message-block-padding-x: 16px;
+    --message-user-bubble-padding-y: 5px;
+    --message-user-bubble-padding-x: 10px;
+    --message-notification-padding-y: 4px;
+    --message-gap: 3px;
+    --message-header-gap: 3px;
+    --message-markdown-block-margin: 3px;
+    --message-thinking-block-margin: 5px;
+    --message-thinking-content-margin: 3px;
+    --task-block-margin-y: 4px;
+    --task-header-padding-y: 4px;
+    --task-header-padding-x: 9px;
+    --task-content-padding: 5px;
+    --tool-list-padding-y: 2px;
+    --tool-list-item-padding-y: 1px;
 }
 
 body {
@@ -30,21 +87,12 @@ html {
 }
 
 #app {
-    /* 
-     * 当使用 zoom 缩放时，容器的渲染尺寸会变大。
-     * 为了适应视口，我们需要反向调整容器的 CSS 尺寸。
-     * 例如：zoom: 1.2 (120%) 时，高度设置为 100vh / 1.2，
-     * 这样渲染出来的高度刚好是 100vh。
-     */
-    height: calc(100vh / var(--font-scale, 1));
-    width: calc(100vw / var(--font-scale, 1));
-    
+    height: 100vh;
+    width: 100vw;
     display: flex;
     flex-direction: column;
     border-left: 1px solid var(--border-primary);
     overflow: hidden;
-    /* 应用字体缩放 - 使用 zoom 属性缩放整个应用，包括所有 px 单位 */
-    zoom: var(--font-scale, 1);
 }
 
 /* Global Scrollbar Styles - Force Override */
@@ -88,14 +136,14 @@ html {
 /* Notice Box - shared info/warning notice */
 .notice-box {
     border-radius: 4px;
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
     line-height: 1.5;
     display: flex;
     align-items: center;
     gap: 6px;
 
     .codicon {
-        font-size: 14px;
+        font-size: var(--app-font-size-14);
         flex-shrink: 0;
     }
 }

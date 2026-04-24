@@ -179,6 +179,12 @@
         "disabled": "已折叠",
         "hint": "开启后，聊天中的代码差异将默认展开显示。关闭后，差异默认折叠，可点击展开。"
       },
+      "messageCompactMode": {
+        "label": "消息紧凑模式",
+        "enabled": "已开启",
+        "disabled": "已关闭",
+        "hint": "开启后会压缩消息、思考块和工具块之间的垂直间距，适合长对话中查看更多上下文。"
+      },
       "commitGeneration": {
         "label": "AI 生成提交信息",
         "enabled": "已开启",

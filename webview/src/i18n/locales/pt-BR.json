@@ -238,6 +238,12 @@
         "custom": "Personalizado",
         "reset": "Redefinir",
         "hint": "Personalize a cor de fundo das suas mensagens. Deixe vazio para seguir o padrão do tema."
+      },
+      "messageCompactMode": {
+        "label": "Modo compacto de mensagens",
+        "enabled": "Ativado",
+        "disabled": "Desativado",
+        "hint": "Reduz o espaçamento vertical entre mensagens, blocos de pensamento e blocos de ferramentas para mostrar mais contexto em conversas longas."
       }
     },
     "providers": "Gerenciamento de Provedores",

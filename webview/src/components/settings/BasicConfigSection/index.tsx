@@ -60,6 +60,9 @@ interface BasicConfigSectionProps {
   // Diff expanded by default configuration
   diffExpandedByDefault?: boolean;
   onDiffExpandedByDefaultChange?: (enabled: boolean) => void;
+  // Message compact mode configuration
+  messageCompactMode?: boolean;
+  onMessageCompactModeChange?: (enabled: boolean) => void;
   // AI commit generation configuration
   commitGenerationEnabled?: boolean;
   onCommitGenerationEnabledChange?: (enabled: boolean) => void;
@@ -134,6 +137,8 @@ const BasicConfigSection = (props: BasicConfigSectionProps) => {
           onAutoOpenFileEnabledChange={props.onAutoOpenFileEnabledChange}
           diffExpandedByDefault={props.diffExpandedByDefault}
           onDiffExpandedByDefaultChange={props.onDiffExpandedByDefaultChange}
+          messageCompactMode={props.messageCompactMode}
+          onMessageCompactModeChange={props.onMessageCompactModeChange}
           commitGenerationEnabled={props.commitGenerationEnabled}
           onCommitGenerationEnabledChange={props.onCommitGenerationEnabledChange}
           statusBarWidgetEnabled={props.statusBarWidgetEnabled}

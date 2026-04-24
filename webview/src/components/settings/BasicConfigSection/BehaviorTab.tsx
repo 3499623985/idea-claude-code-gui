@@ -81,6 +81,8 @@ export interface BehaviorTabProps {
   onAutoOpenFileEnabledChange?: (enabled: boolean) => void;
   diffExpandedByDefault?: boolean;
   onDiffExpandedByDefaultChange?: (enabled: boolean) => void;
+  messageCompactMode?: boolean;
+  onMessageCompactModeChange?: (enabled: boolean) => void;
   commitGenerationEnabled?: boolean;
   onCommitGenerationEnabledChange?: (enabled: boolean) => void;
   statusBarWidgetEnabled?: boolean;
@@ -107,6 +109,8 @@ const BehaviorTab = ({
   onAutoOpenFileEnabledChange = () => {},
   diffExpandedByDefault = false,
   onDiffExpandedByDefaultChange = () => {},
+  messageCompactMode = false,
+  onMessageCompactModeChange = () => {},
   commitGenerationEnabled = true,
   onCommitGenerationEnabledChange = () => {},
   statusBarWidgetEnabled = true,
@@ -246,6 +250,33 @@ const BehaviorTab = ({
         <small className={styles.formHint}>
           <span className="codicon codicon-info" />
           <span>{t('settings.basic.diffExpanded.hint')}</span>
+        </small>
+      </div>
+
+      {/* Message compact mode configuration */}
+      <div className={styles.streamingSection}>
+        <div className={styles.fieldHeader}>
+          <span className="codicon codicon-list-flat" />
+          <span className={styles.fieldLabel}>{t('settings.basic.messageCompactMode.label')}</span>
+        </div>
+        <label className={styles.toggleWrapper}>
+          <input
+            type="checkbox"
+            className={styles.toggleInput}
+            checked={messageCompactMode}
+            aria-label={t('settings.basic.messageCompactMode.label')}
+            onChange={(e) => onMessageCompactModeChange(e.target.checked)}
+          />
+          <span className={styles.toggleSlider} />
+          <span className={styles.toggleLabel}>
+            {messageCompactMode
+              ? t('settings.basic.messageCompactMode.enabled')
+              : t('settings.basic.messageCompactMode.disabled')}
+          </span>
+        </label>
+        <small className={styles.formHint}>
+          <span className="codicon codicon-info" />
+          <span>{t('settings.basic.messageCompactMode.hint')}</span>
         </small>
       </div>
 

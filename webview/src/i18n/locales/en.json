@@ -179,6 +179,12 @@
         "disabled": "Collapsed",
         "hint": "When enabled, code diffs in chat will be expanded by default. When disabled, diffs start collapsed and can be expanded by clicking."
       },
+      "messageCompactMode": {
+        "label": "Compact Message Mode",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "hint": "When enabled, reduces vertical spacing between messages, thinking blocks, and tool blocks so long conversations show more context."
+      },
       "commitGeneration": {
         "label": "AI Commit Message Generation",
         "enabled": "Enabled",

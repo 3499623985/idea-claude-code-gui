@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 export type { UiFontConfig } from '../../../types/uiFontConfig';
 import type { UiFontConfig } from '../../../types/uiFontConfig';
+import { applyMessageCompactMode, getSavedMessageCompactMode } from '../../../utils/messageDensity';
 
 const sendToJava = (message: string) => {
   if (window.sendToJava) {
@@ -53,6 +54,7 @@ export interface UseSettingsBasicActionsReturn {
   selectedSound: string;
   customSoundPath: string;
   diffExpandedByDefault: boolean;
+  messageCompactMode: boolean;
   historyCompletionEnabled: boolean;
   commitGenerationEnabled: boolean;
   statusBarWidgetEnabled: boolean;
@@ -77,6 +79,7 @@ export interface UseSettingsBasicActionsReturn {
   handleTestSound: () => void;
   handleBrowseSound: () => void;
   handleSaveCommitPrompt: () => void;
+  handleMessageCompactModeChange: (enabled: boolean) => void;
   handleCommitGenerationEnabledChange: (enabled: boolean) => void;
   handleStatusBarWidgetEnabledChange: (enabled: boolean) => void;
 
@@ -111,6 +114,7 @@ export interface UseSettingsBasicActionsReturn {
   /** @internal */ setSelectedSound: (soundId: string) => void;
   /** @internal */ setCustomSoundPath: (path: string) => void;
   /** @internal */ setDiffExpandedByDefault: (expanded: boolean) => void;
+  /** @internal */ setMessageCompactMode: (enabled: boolean) => void;
   /** @internal */ setHistoryCompletionEnabled: (enabled: boolean) => void;
   /** @internal */ setCommitGenerationEnabled: (enabled: boolean) => void;
   /** @internal */ setStatusBarWidgetEnabled: (enabled: boolean) => void;
@@ -180,6 +184,8 @@ export function useSettingsBasicActions({
     }
   });
 
+  const [messageCompactMode, setMessageCompactMode] = useState<boolean>(() => getSavedMessageCompactMode());
+
   // History completion toggle configuration
   const [historyCompletionEnabled, setHistoryCompletionEnabled] = useState<boolean>(() => {
     const saved = localStorage.getItem('historyCompletionEnabled');
@@ -202,6 +208,10 @@ export function useSettingsBasicActions({
       }
     } catch { /* ignore storage errors */ }
   }, [diffExpandedByDefault]);
+
+  useEffect(() => {
+    applyMessageCompactMode(messageCompactMode);
+  }, [messageCompactMode]);
 
   const handleSaveNodePath = useCallback(() => {
     setSavingNodePath(true);
@@ -349,6 +359,10 @@ export function useSettingsBasicActions({
     sendToJava(`set_commit_prompt:${JSON.stringify(payload)}`);
   }, [commitPrompt]);
 
+  const handleMessageCompactModeChange = useCallback((enabled: boolean) => {
+    setMessageCompactMode(enabled);
+  }, []);
+
   return {
     nodePath,
     setNodePath,
@@ -391,6 +405,8 @@ export function useSettingsBasicActions({
     setCustomSoundPath,
     diffExpandedByDefault,
     setDiffExpandedByDefault,
+    messageCompactMode,
+    setMessageCompactMode,
     historyCompletionEnabled,
     setHistoryCompletionEnabled,
     handleSaveNodePath,
@@ -410,6 +426,7 @@ export function useSettingsBasicActions({
     handleTestSound,
     handleBrowseSound,
     handleSaveCommitPrompt,
+    handleMessageCompactModeChange,
     commitGenerationEnabled,
     setCommitGenerationEnabled,
     handleCommitGenerationEnabledChange,

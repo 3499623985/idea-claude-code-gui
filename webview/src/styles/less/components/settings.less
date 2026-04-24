@@ -13,7 +13,7 @@
 }
 
 .form-group label {
-    font-size: 13px;
+    font-size: var(--app-font-size-13);
     font-weight: 500;
     color: var(--text-secondary);
     display: flex;
@@ -22,7 +22,7 @@
 }
 
 .form-group label .codicon {
-    font-size: 14px;
+    font-size: var(--app-font-size-14);
     color: var(--text-tertiary);
 }
 
@@ -39,7 +39,7 @@
     border: 1px solid var(--border-secondary);
     border-radius: 4px;
     color: var(--text-primary);
-    font-size: 13px;
+    font-size: var(--app-font-size-13);
     font-family: inherit;
 }
 
@@ -55,7 +55,7 @@
 }
 
 .form-hint {
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
     color: var(--text-tertiary);
 }
 
@@ -107,12 +107,12 @@
 }
 
 .config-info-header .codicon {
-    font-size: 16px;
+    font-size: var(--app-font-size-16);
     color: var(--accent-primary);
 }
 
 .config-info-title {
-    font-size: 14px;
+    font-size: var(--app-font-size-14);
     font-weight: 600;
     color: var(--text-secondary);
 }
@@ -145,13 +145,13 @@
     align-items: center;
     gap: 10px;
     color: var(--text-secondary);
-    font-size: 13px;
+    font-size: var(--app-font-size-13);
     font-weight: 500;
 }
 
 .config-info-value {
     color: var(--text-primary);
-    font-size: 13px;
+    font-size: var(--app-font-size-13);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -168,7 +168,7 @@
     padding: 4px 8px;
     border-radius: 4px;
     font-family: var(--idea-editor-font-family, 'JetBrains Mono', 'Consolas', monospace);
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
     color: var(--text-primary);
     border: 1px solid var(--border-secondary);
 }
@@ -176,7 +176,7 @@
 .config-info-badge {
     background: var(--accent-primary);
     color: white;
-    font-size: 10px;
+    font-size: var(--app-font-size-10);
     padding: 2px 6px;
     border-radius: 4px;
     font-weight: 600;
@@ -212,7 +212,7 @@
 }
 
 .config-info-loading .codicon, .config-info-empty .codicon {
-    font-size: 32px;
+    font-size: var(--app-font-size-32);
     opacity: 0.5;
 }
 
@@ -256,7 +256,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 13px;
+    font-size: var(--app-font-size-13);
     font-weight: 500;
     color: var(--text-secondary);
     cursor: pointer;
@@ -298,7 +298,7 @@
     background: transparent;
     color: var(--text-secondary);
     cursor: pointer;
-    font-size: 13px;
+    font-size: var(--app-font-size-13);
     transition: all 0.2s;
 }
 
@@ -309,7 +309,7 @@
 }
 
 .format-btn .codicon {
-    font-size: 14px;
+    font-size: var(--app-font-size-14);
 }
 
 .json-editor-wrapper {
@@ -379,7 +379,7 @@
 
 .custom-models-editor .empty-models {
     color: var(--text-tertiary);
-    font-size: 13px;
+    font-size: var(--app-font-size-13);
     text-align: center;
     padding: 16px;
 }
@@ -409,18 +409,18 @@
 
 .custom-models-editor .model-id {
     font-family: var(--idea-editor-font-family, monospace);
-    font-size: 13px;
+    font-size: var(--app-font-size-13);
     color: var(--text-primary);
     font-weight: 500;
 }
 
 .custom-models-editor .model-label {
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
     color: var(--text-secondary);
 }
 
 .custom-models-editor .model-desc {
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
     color: var(--text-tertiary);
     margin-left: 8px;
     white-space: nowrap;
@@ -476,7 +476,7 @@
 .custom-models-editor .form-row .form-input {
     flex: 1;
     padding: 6px 10px;
-    font-size: 13px;
+    font-size: var(--app-font-size-13);
 }
 
 .custom-models-editor .form-row.form-actions {
@@ -496,7 +496,7 @@
     background: transparent;
     color: var(--text-secondary);
     cursor: pointer;
-    font-size: 13px;
+    font-size: var(--app-font-size-13);
     transition: all 0.2s;
 }
 
@@ -510,14 +510,14 @@
 .form-group label .optional {
     color: var(--text-tertiary);
     font-weight: 400;
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
     margin-left: 4px;
 }
 
 /* Form error message */
 .custom-models-editor .form-error {
     color: var(--color-error, #ff4d4f);
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
     padding: 4px 0;
     margin-top: -4px;
 }
@@ -548,7 +548,7 @@
     border-radius: 4px;
     background: var(--bg-tertiary);
     color: var(--text-secondary);
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
     cursor: pointer;
     transition: all 0.2s;
     white-space: nowrap;

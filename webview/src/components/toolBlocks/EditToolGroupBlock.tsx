@@ -186,7 +186,6 @@ const EditToolGroupBlock = ({ items }: EditToolGroupBlockProps) => {
   const listHeight = needsScroll
     ? MAX_VISIBLE_ITEMS * ITEM_HEIGHT
     : editItems.length * ITEM_HEIGHT;
-
   const handleFileClick = (item: EditItem, e: React.MouseEvent) => {
     e.stopPropagation();
     openFile(item.openPath, item.lineStart, item.lineEnd);
@@ -204,7 +203,7 @@ const EditToolGroupBlock = ({ items }: EditToolGroupBlockProps) => {
   };
 
   return (
-    <div className="task-container" style={{ margin: '12px 0' }}>
+    <div className="task-container">
       <div
         className="task-header"
         onClick={() => setExpanded((prev) => !prev)}
@@ -247,9 +246,8 @@ const EditToolGroupBlock = ({ items }: EditToolGroupBlockProps) => {
       {expanded && (
         <div
           ref={listRef}
-          className="task-details file-list-container"
+          className={`task-details file-list-container ${needsScroll ? 'has-scrollbar-gutter' : ''}`}
           style={{
-            padding: '6px 8px',
             border: 'none',
             display: 'flex',
             flexDirection: 'column',
@@ -266,7 +264,7 @@ const EditToolGroupBlock = ({ items }: EditToolGroupBlockProps) => {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                padding: '4px 8px',
+                padding: 'var(--tool-list-item-padding-y) 0',
                 borderRadius: '4px',
                 minHeight: `${ITEM_HEIGHT}px`,
                 flexShrink: 0,
@@ -330,27 +328,27 @@ const EditToolGroupBlock = ({ items }: EditToolGroupBlockProps) => {
               )}
 
               {/* Action buttons */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+              <div className="edit-tool-inline-actions">
                 <button
                   onClick={(e) => handleShowDiff(item, e)}
                   title={t('tools.showDiffInIdea')}
-                  className="edit-group-action-btn"
+                  className="edit-group-action-btn edit-group-action-btn--label"
                 >
-                  <span className="codicon codicon-diff" style={{ fontSize: '12px' }} />
+                  <span className="codicon codicon-diff" />
+                  {t('tools.diffButton')}
                 </button>
                 <button
                   onClick={(e) => handleRefresh(item.openPath, e)}
                   title={t('tools.refreshFileInIdea')}
                   className="edit-group-action-btn"
                 >
-                  <span className="codicon codicon-refresh" style={{ fontSize: '12px' }} />
+                  <span className="codicon codicon-refresh" />
                 </button>
               </div>
 
               {/* Status indicator */}
               <div
-                className={`tool-status-indicator ${item.isError ? 'error' : item.isCompleted ? 'completed' : 'pending'}`}
-                style={{ marginLeft: '4px' }}
+                className={`tool-status-indicator edit-tool-status-indicator ${item.isError ? 'error' : item.isCompleted ? 'completed' : 'pending'}`}
               />
             </div>
           ))}

@@ -193,6 +193,12 @@
         "custom": "Personalizado",
         "reset": "Restablecer",
         "hint": "Personalizar el color de fondo de sus mensajes. Dejar vacío para seguir el tema predeterminado."
+      },
+      "messageCompactMode": {
+        "label": "Modo de mensajes compacto",
+        "enabled": "Activado",
+        "disabled": "Desactivado",
+        "hint": "Reduce el espaciado vertical entre mensajes, bloques de pensamiento y bloques de herramientas para ver más contexto en conversaciones largas."
       }
     },
     "providers": "Gestión de proveedores",
@@ -1270,7 +1276,7 @@
   },
   "fileContext": {
     "placeholder": "Contexto de archivo",
-    "enableTitle": "\u00bfHabilitar contexto de archivo?",
+    "enableTitle": "¿Habilitar contexto de archivo?",
     "enableDescription": "Cuando esté habilitado, la ruta del archivo abierto en el editor se enviará a la IA. Nota: solo se transmite la ruta del archivo, no su contenido.",
     "enable": "Habilitar",
     "cancel": "Cancelar"

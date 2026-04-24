@@ -4,7 +4,7 @@
 }
 
 .sectionTitle {
-  font-size: 20px;
+  font-size: var(--app-font-size-20);
   font-weight: 600;
   margin: 0 0 8px 0;
   color: var(--text-primary);
@@ -13,7 +13,7 @@
 .sectionDesc {
   color: var(--text-tertiary);
   margin: 0 0 16px 0;
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
 }
 
 /* Basic config sub-tab selector */
@@ -35,14 +35,14 @@
   border-radius: 4px;
   background: transparent;
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   cursor: pointer;
   transition: all 0.2s;
   flex: 1;
   justify-content: center;
 
   .codicon {
-    font-size: 14px;
+    font-size: var(--app-font-size-14);
   }
 
   &:hover {
@@ -74,13 +74,13 @@
   margin-bottom: 12px;
 
   .codicon {
-    font-size: 16px;
+    font-size: var(--app-font-size-16);
     color: var(--accent-primary);
   }
 }
 
 .fieldLabel {
-  font-size: 14px;
+  font-size: var(--app-font-size-14);
   font-weight: 600;
   color: var(--text-secondary);
 }
@@ -114,7 +114,7 @@
 }
 
 .themeOptionLabel {
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   font-weight: 500;
   color: var(--text-primary);
   white-space: nowrap;
@@ -159,7 +159,7 @@
   justify-content: center;
 
   .codicon {
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
     color: #ffffff;
   }
 }
@@ -176,7 +176,7 @@
   flex-shrink: 0;
 
   .codicon, svg {
-    font-size: 14px;
+    font-size: var(--app-font-size-14);
     width: 14px;
     height: 14px;
     color: #333333;
@@ -195,7 +195,7 @@
   flex-shrink: 0;
 
   .codicon, svg {
-    font-size: 14px;
+    font-size: var(--app-font-size-14);
     width: 14px;
     height: 14px;
     color: #ffffff;
@@ -214,7 +214,7 @@
   flex-shrink: 0;
 
   .codicon, svg {
-    font-size: 14px;
+    font-size: var(--app-font-size-14);
     width: 14px;
     height: 14px;
     color: #ffffff;
@@ -222,14 +222,14 @@
 }
 
 .themeCardTitle {
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   font-weight: 600;
   margin-bottom: 4px;
   color: var(--text-primary);
 }
 
 .themeCardDesc {
-  font-size: 11px;
+  font-size: var(--app-font-size-11);
   color: var(--text-tertiary);
   line-height: 1.4;
 }
@@ -331,7 +331,7 @@
   border: 1px solid var(--border-secondary);
   border-radius: 4px;
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   font-family: inherit;
   cursor: pointer;
   transition: all 0.2s;
@@ -366,7 +366,7 @@
   border: 1px solid var(--border-secondary);
   border-radius: 4px;
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   font-family: var(--idea-editor-font-family, monospace);
   max-width: 400px;
 }
@@ -379,7 +379,7 @@
   border: 1px solid var(--border-secondary);
   border-radius: 4px;
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   font-family: inherit;
   cursor: pointer;
   transition: all 0.2s;
@@ -406,7 +406,7 @@
 
 .versionBadge {
   margin-left: 8px;
-  font-size: 12px;
+  font-size: var(--app-font-size-12);
   font-weight: 500;
 }
 
@@ -423,11 +423,11 @@
   align-items: center;
   gap: 4px;
   color: var(--color-error, #f85149);
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   margin-bottom: 8px;
 
   .codicon {
-    font-size: 14px;
+    font-size: var(--app-font-size-14);
   }
 }
 
@@ -447,7 +447,7 @@
   border: 1px solid var(--border-secondary);
   border-radius: 4px;
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   font-family: inherit;
 
   &:focus {
@@ -474,7 +474,7 @@
   background: transparent;
   color: var(--text-primary);
   cursor: pointer;
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   font-weight: 500;
   transition: all 0.2s;
 
@@ -493,7 +493,7 @@
   }
 
   .codicon {
-    font-size: 14px;
+    font-size: var(--app-font-size-14);
   }
 }
 
@@ -501,11 +501,11 @@
   display: flex;
   align-items: flex-start;
   gap: 4px;
-  font-size: 12px;
+  font-size: var(--app-font-size-12);
   color: var(--text-tertiary);
 
   .codicon {
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
     margin-top: 2px;
   }
 
@@ -514,7 +514,7 @@
     padding: 1px 4px;
     border-radius: 3px;
     font-family: var(--idea-editor-font-family, monospace);
-    font-size: 11px;
+    font-size: var(--app-font-size-11);
   }
 }
 
@@ -578,7 +578,7 @@
 }
 
 .toggleLabel {
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   color: var(--text-secondary);
 }
 
@@ -630,7 +630,7 @@
 }
 
 .customColorLabel {
-  font-size: 12px;
+  font-size: var(--app-font-size-12);
   color: var(--text-tertiary);
   white-space: nowrap;
 }
@@ -674,7 +674,7 @@
   border: 1px solid var(--border-secondary);
   border-radius: 4px;
   color: var(--text-primary);
-  font-size: 12px;
+  font-size: var(--app-font-size-12);
   font-family: var(--idea-editor-font-family, monospace);
 
   &:focus {
@@ -698,12 +698,12 @@
   background: transparent;
   color: var(--text-secondary);
   cursor: pointer;
-  font-size: 12px;
+  font-size: var(--app-font-size-12);
   transition: all 0.2s;
   white-space: nowrap;
 
   .codicon {
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
   }
 
   &:hover {
@@ -783,7 +783,7 @@
   border: 1px solid var(--border-secondary);
   border-radius: 4px;
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   font-family: inherit;
   cursor: pointer;
   transition: all 0.2s;
@@ -837,7 +837,7 @@
 
 .upwardSelectOption {
   padding: 8px 12px;
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   color: var(--text-primary);
   cursor: pointer;
   transition: background 0.15s;
@@ -856,32 +856,32 @@
 /* 响应式适配 */
 @media (max-width: 480px) {
   .sectionTitle {
-    font-size: 16px;
+    font-size: var(--app-font-size-16);
     margin-bottom: 6px;
   }
 
   .sectionDesc {
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
     margin-bottom: 16px;
   }
 
   .languageSelect {
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
     padding: 7px 10px;
   }
 
   .nodePathInput {
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
     padding: 7px 10px;
   }
 
   .formHint {
-    font-size: 11px;
+    font-size: var(--app-font-size-11);
   }
 
   .saveBtn {
     width: 100%;
     padding: 8px 12px;
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
   }
 }

@@ -3,7 +3,7 @@
     background: var(--bg-primary);
     border: 1px solid var(--border-primary);
     border-radius: 8px;
-    margin: 12px 0;
+    margin: var(--task-block-margin-y) 0;
     overflow: hidden;
 }
 
@@ -11,7 +11,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 12px;
+    padding: var(--task-header-padding-y) var(--task-header-padding-x);
     background: var(--bg-primary);
     cursor: pointer;
     user-select: none;
@@ -34,13 +34,13 @@
 }
 
 .task-chevron {
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
     color: var(--text-tertiary);
     transition: transform 0.2s ease;
 }
 
 .tool-chevron {
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
     color: var(--text-tertiary);
     flex-shrink: 0;
     margin-right: 4px;
@@ -68,11 +68,11 @@
 
 .task-icon {
     color: var(--color-task-icon);
-    font-size: 14px;
+    font-size: var(--app-font-size-14);
 }
 
 .task-type-badge {
-    font-size: 11px;
+    font-size: var(--app-font-size-11);
     font-weight: 600;
     color: var(--color-task-badge-text);
     background: var(--color-task-badge-bg);
@@ -83,7 +83,7 @@
 }
 
 .task-summary-text {
-    font-size: 13px;
+    font-size: var(--app-font-size-13);
     color: var(--text-secondary);
     white-space: nowrap;
     /* overflow: hidden; */
@@ -118,11 +118,11 @@
 }
 
 .task-content-wrapper {
-    padding: 10px;
+    padding: var(--task-content-padding);
 }
 
 .task-field {
-    margin-bottom: 10px;
+    margin-bottom: var(--message-markdown-block-margin);
 }
 
 .task-field:last-child {
@@ -130,7 +130,7 @@
 }
 
 .task-field-label {
-    font-size: 11px;
+    font-size: var(--app-font-size-11);
     text-transform: uppercase;
     color: var(--text-tertiary);
     margin-bottom: 4px;
@@ -141,7 +141,7 @@
 }
 
 .task-field-content {
-    font-size: 13px;
+    font-size: var(--app-font-size-13);
     color: var(--text-primary);
     line-height: 1.5;
     white-space: pre-wrap;
@@ -175,8 +175,13 @@
 
 /* File list container scrollbar */
 .file-list-container {
+    padding: var(--tool-list-padding-y) var(--task-header-padding-x);
     scrollbar-width: thin;
     scrollbar-color: var(--scrollbar-thumb, rgba(128, 128, 128, 0.4)) transparent;
+}
+
+.file-list-container.has-scrollbar-gutter {
+    padding-right: calc(var(--task-header-padding-x) - var(--tool-list-scrollbar-gutter));
 }
 
 .file-list-container::-webkit-scrollbar {
@@ -196,27 +201,51 @@
     background-color: var(--scrollbar-thumb-hover, rgba(128, 128, 128, 0.6));
 }
 
-/* EditToolGroupBlock action buttons */
+.edit-tool-inline-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.tool-status-indicator.edit-tool-status-indicator {
+    margin-left: 16px;
+}
+
+/* Edit tool action buttons */
 .edit-group-action-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    min-width: 28px;
+    height: 26px;
     padding: 0;
-    border: none;
+    border: 1px solid var(--border-primary);
     border-radius: 4px;
-    background: transparent;
+    background: var(--bg-tertiary);
     color: var(--text-secondary);
     cursor: pointer;
     transition: all 0.15s ease;
+    font-size: var(--app-font-size-12);
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.edit-group-action-btn--label {
+    gap: 4px;
+    padding: 0 8px;
 }
 
 .edit-group-action-btn:hover {
-    background: var(--bg-tertiary, var(--bg-secondary));
+    background: var(--bg-hover);
     color: var(--text-primary);
 }
 
 .edit-group-action-btn:active {
     background: var(--bg-active, var(--bg-secondary));
+}
+
+.edit-group-action-btn .codicon {
+    font-size: var(--app-font-size-12);
 }

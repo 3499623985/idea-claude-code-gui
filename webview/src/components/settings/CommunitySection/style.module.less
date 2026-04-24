@@ -4,7 +4,7 @@
 }
 
 .sectionTitle {
-  font-size: 20px;
+  font-size: var(--app-font-size-20);
   font-weight: 600;
   margin: 0 0 8px 0;
   color: var(--text-primary);
@@ -13,7 +13,7 @@
 .sectionDesc {
   color: var(--text-tertiary);
   margin: 0 0 24px 0;
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
 }
 
 .qrcodeContainer {
@@ -47,7 +47,7 @@
 
 .qrcodeTip {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--app-font-size-14);
   color: var(--text-tertiary);
   text-align: center;
 }
@@ -68,7 +68,7 @@
   background: var(--bg-secondary);
   border: 1px solid var(--border-secondary);
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   font-weight: 500;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
@@ -79,7 +79,7 @@
   }
 
   .codicon {
-    font-size: 14px;
+    font-size: var(--app-font-size-14);
   }
 }
 
@@ -99,7 +99,7 @@
   background: var(--bg-secondary);
   border: 1px solid var(--border-secondary);
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   font-weight: 500;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
@@ -110,19 +110,19 @@
   }
 
   .codicon {
-    font-size: 14px;
+    font-size: var(--app-font-size-14);
   }
 }
 
 /* 响应式适配 - 480px */
 @media (max-width: 480px) {
   .sectionTitle {
-    font-size: 16px;
+    font-size: var(--app-font-size-16);
     margin-bottom: 6px;
   }
 
   .sectionDesc {
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
     margin-bottom: 16px;
   }
 
@@ -140,6 +140,6 @@
   }
 
   .qrcodeTip {
-    font-size: 13px;
+    font-size: var(--app-font-size-13);
   }
 }

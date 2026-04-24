@@ -33,6 +33,20 @@ function getExtension(fileName?: string): string {
   return parts.length > 1 ? parts[parts.length - 1].toUpperCase() : '';
 }
 
+function ThinkingInsightIcon(): React.ReactElement {
+  return (
+    <svg
+      className="thinking-insight-icon"
+      viewBox="0 0 16 16"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M5.2 9.8a4 4 0 1 1 5.6 0c-.7.6-1 1.2-1 2H6.2c0-.8-.3-1.4-1-2Z" />
+      <path d="M6.3 13.7h3.4M6.7 15h2.6M8 1v1.2M2.7 3.2l.9.9M13.3 3.2l-.9.9" />
+    </svg>
+  );
+}
+
 export interface ContentBlockRendererProps {
   block: ClaudeContentBlock;
   messageIndex: number;
@@ -145,6 +159,7 @@ export function ContentBlockRenderer({
           className="thinking-header"
           onClick={onToggleThinking}
         >
+          <ThinkingInsightIcon />
           <span className="thinking-title">
             {isThinking && isLastMessage && isLastBlock
               ? t('common.thinkingProcess')

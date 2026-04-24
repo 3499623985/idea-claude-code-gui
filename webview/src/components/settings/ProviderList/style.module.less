@@ -13,7 +13,7 @@
 
   .title {
     margin: 0;
-    font-size: 14px;
+    font-size: var(--app-font-size-14);
     color: var(--text-secondary);
   }
 
@@ -33,7 +33,7 @@
   color: #ffffff;
   border: none;
   cursor: pointer;
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
 
   &:hover {
     background: var(--button-primary-hover-background, #0063b1);
@@ -50,7 +50,7 @@
   background: transparent;
   color: var(--text-secondary);
   cursor: pointer;
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
 
   &:hover {
     background: var(--bg-hover);
@@ -78,7 +78,7 @@
 .importMenuItem {
   padding: 8px 12px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   color: var(--text-secondary);
   display: flex;
   align-items: center;
@@ -132,7 +132,7 @@
 
   h3 {
     margin: 0;
-    font-size: 16px;
+    font-size: var(--app-font-size-16);
     font-weight: 600;
   }
 
@@ -157,7 +157,7 @@
 
 .summary {
   margin-bottom: 16px;
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   color: var(--text-secondary);
   line-height: 1.6;
 }
@@ -184,7 +184,7 @@
 
 .strategyLabel {
   display: block;
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   font-weight: 500;
   color: var(--text-primary);
   margin-bottom: 12px;
@@ -222,13 +222,13 @@
   flex: 1;
 
   strong {
-    font-size: 13px;
+    font-size: var(--app-font-size-13);
     color: var(--text-primary);
   }
 }
 
 .strategyDesc {
-  font-size: 12px;
+  font-size: var(--app-font-size-12);
   color: var(--text-tertiary);
   line-height: 1.4;
 }
@@ -239,7 +239,7 @@
   padding: 8px;
   background: var(--bg-secondary);
   border-radius: 4px;
-  font-size: 12px;
+  font-size: var(--app-font-size-12);
   font-weight: 500;
   color: var(--text-secondary);
   margin-bottom: 8px;
@@ -285,7 +285,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   color: var(--text-primary);
   font-weight: 500;
 }
@@ -295,7 +295,7 @@
   padding: 0 8px;
   color: var(--text-tertiary);
   font-family: var(--idea-editor-font-family, 'JetBrains Mono', 'Consolas', monospace);
-  font-size: 11px;
+  font-size: var(--app-font-size-11);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -315,7 +315,7 @@
   color: #4caf50;
   padding: 2px 8px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: var(--app-font-size-11);
   font-weight: 500;
   white-space: nowrap;
 }
@@ -325,7 +325,7 @@
   color: #ff9800;
   padding: 2px 8px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: var(--app-font-size-11);
   font-weight: 500;
   white-space: nowrap;
 }
@@ -334,7 +334,7 @@
   display: inline-flex;
   align-items: center;
   color: var(--warning-color, #ff9800);
-  font-size: 14px;
+  font-size: var(--app-font-size-14);
 
   .codicon {
     animation: pulse 2s ease-in-out infinite;
@@ -359,7 +359,7 @@
 }
 
 .selectedCount {
-  font-size: 12px;
+  font-size: var(--app-font-size-12);
   color: var(--text-secondary);
 }
 
@@ -406,7 +406,7 @@
   background: var(--bg-secondary);
   border: 1px solid var(--border-primary);
   border-radius: 4px;
-  font-size: 10px;
+  font-size: var(--app-font-size-10);
   color: var(--text-tertiary);
   margin-top: 4px;
   width: fit-content;
@@ -439,14 +439,14 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 16px;
+  font-size: var(--app-font-size-16);
   font-weight: 600;
   color: var(--warning-color, #ff9800);
   margin-bottom: 16px;
 }
 
 .warningContent {
-  font-size: 13px;
+  font-size: var(--app-font-size-13);
   line-height: 1.5;
   color: var(--text-primary);
   margin-bottom: 24px;
@@ -520,7 +520,7 @@
   min-width: 0;
 
   .name {
-    font-size: 14px;
+    font-size: var(--app-font-size-14);
     font-weight: 600;
     color: var(--text-secondary);
     overflow: hidden;
@@ -529,7 +529,7 @@
   }
 
   .website {
-    font-size: 12px;
+    font-size: var(--app-font-size-12);
     color: var(--text-tertiary);
     margin-top: 2px;
     overflow: hidden;
@@ -556,7 +556,7 @@
   background: var(--button-primary-background, #0078d4);
   color: #ffffff;
   cursor: pointer;
-  font-size: 12px;
+  font-size: var(--app-font-size-12);
   font-weight: 500;
   transition: all 0.2s;
 
@@ -581,7 +581,7 @@
   background: color-mix(in srgb, #c2410c 14%, transparent);
   color: #f97316;
   cursor: pointer;
-  font-size: 12px;
+  font-size: var(--app-font-size-12);
   font-weight: 500;
   transition: all 0.2s;
 
@@ -603,7 +603,7 @@
   border-radius: 8px;
   background: var(--bg-tertiary);
   color: var(--text-tertiary);
-  font-size: 12px;
+  font-size: var(--app-font-size-12);
   font-weight: 500;
   cursor: default;
   user-select: none;
@@ -650,14 +650,14 @@
   margin-top: 8px;
 
   :global(.codicon) {
-    font-size: 48px;
+    font-size: var(--app-font-size-48);
     margin-bottom: 16px;
     opacity: 0.5;
   }
 
   p {
     margin: 0;
-    font-size: 14px;
+    font-size: var(--app-font-size-14);
     font-weight: 500;
   }
 }
@@ -699,10 +699,10 @@
   align-items: center;
   gap: 16px;
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: var(--app-font-size-14);
 
   :global(.codicon) {
-    font-size: 32px;
+    font-size: var(--app-font-size-32);
     color: var(--button-primary-background, #0078d4);
   }
 }

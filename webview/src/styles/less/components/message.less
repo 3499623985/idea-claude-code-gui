@@ -14,7 +14,7 @@
     padding: 8px 20px;
     text-align: center;
     color: var(--text-secondary, #888);
-    font-size: 13px;
+    font-size: var(--message-small-font-size);
     cursor: pointer;
     opacity: 0.8;
     transition: opacity 0.15s;
@@ -27,14 +27,15 @@
 
 /* Message Styles - Agent Style */
 .message {
-    padding: 16px 20px;
+    padding: var(--message-block-padding-y) var(--message-block-padding-x);
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: var(--message-gap);
     border-bottom: 1px solid var(--color-message-divider);
     min-width: 0; /* 允许内容缩小 */
     max-width: 100%; /* 防止超出容器 */
-    contain: layout style; /* Isolate layout — prevents cross-message recalculation during scroll */
+    /* Isolate layout without style containment to avoid stale JCEF tile invalidation */
+    contain: layout;
 }
 
 .message:last-child {
@@ -46,15 +47,15 @@
     background-color: transparent;
     border-left: none;
     align-items: flex-end;
-    padding-top: 16px;
-    padding-bottom: 16px;
+    padding-top: var(--message-block-padding-y);
+    padding-bottom: var(--message-block-padding-y);
     position: relative; /* Enable absolute positioning for copy button */
 }
 
 .message.user .message-content {
     background-color: var(--color-message-user-bg);
     color: var(--color-message-user-text);
-    padding: 10px 14px;
+    padding: var(--message-user-bubble-padding-y) var(--message-user-bubble-padding-x);
     border-radius: 12px 12px 2px 12px;
     max-width: 85%;
     border: 1px solid rgba(255,255,255,0.06);
@@ -70,7 +71,7 @@
     background-color: transparent;
     border-left: none;
     align-items: flex-start;
-    padding: 8px 20px;
+    padding: var(--message-notification-padding-y) var(--message-block-padding-x);
 }
 
 .message.task_notification .message-content,
@@ -85,12 +86,12 @@
 .message-header-row {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--message-header-gap);
     margin-bottom: 2px;
 }
 
 .message-timestamp-header {
-    font-size: 11px;
+    font-size: var(--message-caption-font-size);
     color: var(--text-tertiary);
     line-height: 1;
 }
@@ -99,8 +100,8 @@
 .message.assistant {
     background: transparent;
     flex-direction: column; /* Revert to column to avoid alignment issues without dot */
-    gap: 6px;
-    padding-left: 20px;
+    gap: var(--message-gap);
+    padding-left: var(--message-block-padding-x);
 }
 
 .message.assistant .message-content {
@@ -155,7 +156,7 @@
         box-shadow: var(--shadow-sm);
         padding: 4px 8px;
         border-radius: 4px;
-        font-size: 12px;
+        font-size: var(--message-small-font-size);
         opacity: 0;
         visibility: hidden;
         transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
@@ -292,13 +293,13 @@
 }
 
 .provider-card-title {
-    font-size: 13.5px;
+    font-size: var(--message-font-size);
     font-weight: 600;
     color: var(--color-provider-card-accent);
 }
 
 .provider-card-description {
-    font-size: 13px;
+    font-size: var(--message-small-font-size);
     line-height: 1.5;
     color: var(--text-secondary);
     margin: 0;
@@ -314,7 +315,7 @@
     border: 1px solid var(--color-provider-card-action-border);
     background: var(--color-provider-card-action-bg);
     color: var(--color-provider-card-accent);
-    font-size: 13px;
+    font-size: var(--message-small-font-size);
     font-weight: 500;
     cursor: pointer;
     transition: background 0.15s ease, border-color 0.15s ease;
@@ -343,7 +344,7 @@
 }
 
 .message-role-label {
-    font-size: 11px;
+    font-size: var(--message-caption-font-size);
     text-transform: uppercase;
     font-weight: 600;
     letter-spacing: 0.5px;
@@ -369,7 +370,7 @@
 
 /* Message Content */
 .message-content {
-    font-size: var(--idea-editor-font-size, 13.5px);
+    font-size: var(--message-font-size);
     line-height: 1.6;
     color: var(--text-primary);
     min-width: 0; /* Allow flex items to shrink below content size */
@@ -390,7 +391,7 @@
 
 /* Markdown Content */
 .markdown-content {
-    font-size: var(--idea-editor-font-size, 13.5px);
+    font-size: var(--message-font-size);
     line-height: 1.6;
     color: var(--text-primary);
     word-wrap: break-word;
@@ -406,7 +407,7 @@
 }
 
 .markdown-content p {
-    margin-bottom: 10px;
+    margin-bottom: var(--message-markdown-block-margin);
     word-wrap: break-word;
     overflow-wrap: break-word;
     max-width: 100%;
@@ -422,9 +423,9 @@
     border-radius: 6px;
     padding: 12px;
     overflow-x: auto;
-    margin: 10px 0;
+    margin: var(--message-markdown-block-margin) 0;
     font-family: var(--idea-editor-font-family, 'JetBrains Mono', 'Consolas', monospace);
-    font-size: var(--idea-editor-font-size, 12.5px);
+    font-size: var(--message-code-font-size);
     line-height: var(--idea-editor-line-spacing, 1.5);
     max-width: 100%; /* 防止超出容器 */
     box-sizing: border-box; /* 包含 padding 在宽度内 */
@@ -437,7 +438,7 @@
 
 .code-block-wrapper {
     position: relative;
-    margin: 10px 0;
+    margin: var(--message-markdown-block-margin) 0;
     cursor: default;
 
     pre {
@@ -489,7 +490,7 @@
     box-shadow: var(--shadow-sm);
     padding: 4px 8px;
     border-radius: 4px;
-    font-size: 12px;
+    font-size: var(--message-small-font-size);
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.2s ease, visibility 0.2s ease;
@@ -540,7 +541,7 @@
     background-color: var(--color-code-inline-bg);
     padding: 2px 4px;
     border-radius: 3px;
-    font-size: 12.5px;
+    font-size: var(--message-code-font-size);
     word-wrap: break-word;
     overflow-wrap: break-word;
 }
@@ -570,7 +571,7 @@
 }
 
 .markdown-content ul, .markdown-content ol {
-    margin: 10px 0;
+    margin: var(--message-markdown-block-margin) 0;
     padding-left: 24px;
     max-width: 100%;
 }
@@ -582,7 +583,7 @@
 }
 
 .markdown-content blockquote {
-    margin: 10px 0;
+    margin: var(--message-markdown-block-margin) 0;
     padding-left: 16px;
     border-left: 4px solid var(--color-message-blockquote);
     color: var(--text-tertiary);
@@ -594,7 +595,7 @@
 .markdown-content h1, .markdown-content h2, .markdown-content h3,
 .markdown-content h4, .markdown-content h5, .markdown-content h6 {
     font-weight: 600;
-    margin-top: 16px;
+    margin-top: calc(var(--message-markdown-block-margin) + 6px);
     margin-bottom: 8px;
     color: var(--text-secondary);
     word-wrap: break-word;
@@ -622,7 +623,7 @@
 .markdown-content table {
     border-collapse: collapse;
     width: 100%;
-    margin: 10px 0;
+    margin: var(--message-markdown-block-margin) 0;
     display: block; /* 使表格可以滚动 */
     max-width: 100%;
     overflow-x: auto; /* 表格内部滚动 */
@@ -651,39 +652,52 @@
 
 /* Thinking Block - Minimalist */
 .thinking-block {
-    margin-bottom: 16px;
-    font-size: 12.5px;
+    margin-bottom: var(--message-thinking-block-margin);
+    font-size: var(--message-code-font-size);
 }
 
 .thinking-header {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--message-header-gap);
     cursor: pointer;
     user-select: none;
     color: var(--text-tertiary); /* Matches screenshot gray */
     transition: opacity 0.2s;
     background: transparent;
     font-weight: 500;
-    font-size: 13px;
+    font-size: var(--message-small-font-size);
 }
 
 .thinking-header:hover {
     opacity: 0.8;
 }
 
+.thinking-insight-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: currentColor;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.9;
+}
+
 .thinking-icon {
-    font-size: 10px;
+    font-size: var(--message-caption-font-size);
     opacity: 0.8;
 }
 
 .thinking-content {
-    margin-top: 8px;
+    margin-top: var(--message-thinking-content-margin);
     padding-left: 12px;
     border-left: 2px solid var(--color-thinking-border);
     color: var(--text-tertiary);
     font-family: inherit;
-    font-size: 12px;
+    font-size: var(--message-small-font-size);
     line-height: 1.5;
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -735,11 +749,11 @@
     gap: 8px;
     padding: 12px 16px;
     color: var(--text-secondary);
-    font-size: 13px;
+    font-size: var(--message-small-font-size);
 }
 
 .thinking-status-icon {
-    font-size: 16px;
+    font-size: var(--message-large-icon-font-size);
     animation: thinking-pulse 1.5s ease-in-out infinite;
 }
 
@@ -753,7 +767,7 @@
     gap: 8px;
     padding: 4px 0;
     color: var(--text-tertiary);
-    font-size: 12.5px;
+    font-size: var(--message-code-font-size);
     line-height: 1.4;
 }
 
@@ -784,13 +798,13 @@
     align-items: center;
     gap: 8px;
     padding: 6px 12px;
-    font-size: 13px;
+    font-size: var(--message-small-font-size);
     min-width: 0; /* 允许内容缩小 */
 }
 
 .tool-icon {
     color: var(--color-tool-icon);
-    font-size: 14px;
+    font-size: var(--message-icon-font-size);
     width: 16px;
     display: flex;
     justify-content: center;
@@ -808,7 +822,7 @@
     text-overflow: ellipsis;
     flex: 1;
     font-family: var(--idea-editor-font-family, 'JetBrains Mono', 'Consolas', monospace);
-    font-size: 12px;
+    font-size: var(--message-small-font-size);
 }
 
 .tool-file-link {
@@ -826,7 +840,7 @@
     background: var(--color-tool-bg-secondary);
     border-top: 1px solid var(--border-primary);
     font-family: var(--idea-editor-font-family, 'JetBrains Mono', 'Consolas', monospace);
-    font-size: 12px;
+    font-size: var(--message-small-font-size);
     color: var(--color-tool-param-text);
     max-width: 100%;
     overflow-x: auto; /* 参数过长时内部滚动 */
@@ -959,7 +973,7 @@
     box-shadow: var(--shadow-sm);
     padding: 6px 10px;
     border-radius: 6px;
-    font-size: 10px;
+    font-size: var(--message-caption-font-size);
     line-height: 1.4;
     max-width: 400px;
     width: max-content;
@@ -1014,12 +1028,12 @@
         padding: 5px 14px;
         border: 1px solid var(--border-secondary);
         border-radius: 6px;
-        font-size: 12px;
+        font-size: var(--message-small-font-size);
         color: var(--text-tertiary);
     }
 
     .message-duration-flag {
-        font-size: 12px;
+        font-size: var(--message-small-font-size);
         opacity: 0.7;
     }
 
@@ -1038,11 +1052,11 @@
     align-items: center;
     gap: 8px;
     padding: 8px 0;
-    font-size: 13px;
+    font-size: var(--message-small-font-size);
 }
 
 .task-notification-icon {
-    font-size: 12px;
+    font-size: var(--message-small-font-size);
 }
 
 .task-notification-summary {

@@ -193,6 +193,12 @@
         "custom": "Personnalisé",
         "reset": "Réinitialiser",
         "hint": "Personnaliser la couleur de fond de vos messages. Laisser vide pour suivre le thème par défaut."
+      },
+      "messageCompactMode": {
+        "label": "Mode messages compact",
+        "enabled": "Activé",
+        "disabled": "Désactivé",
+        "hint": "Réduit l’espacement vertical entre les messages, les blocs de réflexion et les blocs d’outils pour afficher plus de contexte dans les longues conversations."
       }
     },
     "providers": "Gestion des fournisseurs",

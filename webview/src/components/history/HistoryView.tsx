@@ -6,9 +6,16 @@ import { extractCommandMessageContent } from '../../utils/messageUtils';
 import { sendBridgeEvent } from '../../utils/bridge';
 import { ProviderModelIcon } from '../shared/ProviderModelIcon';
 import { copyToClipboard } from '../../utils/copyUtils';
+import { FONT_SCALE_CHANGED_EVENT, getCurrentFontScale } from '../../utils/fontScale';
 
 // Deep search timeout (milliseconds)
 const DEEP_SEARCH_TIMEOUT_MS = 30000;
+const HISTORY_ITEM_HEIGHT = 78;
+const HISTORY_DEFAULT_FONT_SCALE = 0.9;
+
+function getScaledHistoryItemHeight(scale: number): number {
+  return Math.round(HISTORY_ITEM_HEIGHT * (scale / HISTORY_DEFAULT_FONT_SCALE));
+}
 
 interface HistoryViewProps {
   historyData: HistoryData | null;
@@ -97,6 +104,7 @@ const deduplicateHistorySessions = (sessions: HistorySessionSummary[]) => {
 const HistoryView = ({ historyData, currentProvider, onLoadSession, onDeleteSession, onExportSession, onToggleFavorite, onUpdateTitle }: HistoryViewProps) => {
   const { t } = useTranslation();
   const [viewportHeight, setViewportHeight] = useState(() => window.innerHeight || 600);
+  const [fontScale, setFontScale] = useState(() => getCurrentFontScale());
   const [deletingSessionId, setDeletingSessionId] = useState<string | null>(null); // Session ID pending deletion
   const [inputValue, setInputValue] = useState(''); // Immediate value of search input
   const [searchQuery, setSearchQuery] = useState(''); // Actual search keyword (debounced)
@@ -126,6 +134,12 @@ const HistoryView = ({ historyData, currentProvider, onLoadSession, onDeleteSess
     const handleResize = () => setViewportHeight(window.innerHeight || 600);
     window.addEventListener('resize', handleResize, { passive: true });
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const handleFontScaleChange = () => setFontScale(getCurrentFontScale());
+    window.addEventListener(FONT_SCALE_CHANGED_EVENT, handleFontScaleChange);
+    return () => window.removeEventListener(FONT_SCALE_CHANGED_EVENT, handleFontScaleChange);
   }, []);
 
   // Debounce: update search keyword 300ms after input stops
@@ -205,7 +219,7 @@ const HistoryView = ({ historyData, currentProvider, onLoadSession, onDeleteSess
     return (
       <div className="messages-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center', color: '#858585' }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
+          <div style={{ fontSize: 'var(--app-font-size-48)', marginBottom: '16px' }}>⚠️</div>
           <div>{historyData.error ?? t('history.loadFailed')}</div>
         </div>
       </div>
@@ -219,9 +233,9 @@ const HistoryView = ({ historyData, currentProvider, onLoadSession, onDeleteSess
       return (
         <div className="messages-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
           <div style={{ textAlign: 'center', color: '#858585' }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
+            <div style={{ fontSize: 'var(--app-font-size-48)', marginBottom: '16px' }}>🔍</div>
             <div>{t('history.noSearchResults')}</div>
-            <div style={{ fontSize: '12px', marginTop: '8px' }}>{t('history.tryOtherKeywords')}</div>
+            <div style={{ fontSize: 'var(--app-font-size-12)', marginTop: '8px' }}>{t('history.tryOtherKeywords')}</div>
           </div>
         </div>
       );
@@ -232,9 +246,9 @@ const HistoryView = ({ historyData, currentProvider, onLoadSession, onDeleteSess
       return (
         <div className="messages-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
           <div style={{ textAlign: 'center', color: '#858585' }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>📭</div>
+            <div style={{ fontSize: 'var(--app-font-size-48)', marginBottom: '16px' }}>📭</div>
             <div>{t('history.noSessions')}</div>
-            <div style={{ fontSize: '12px', marginTop: '8px' }}>{t('history.noSessionsDesc')}</div>
+            <div style={{ fontSize: 'var(--app-font-size-12)', marginTop: '8px' }}>{t('history.noSessionsDesc')}</div>
           </div>
         </div>
       );
@@ -517,6 +531,7 @@ const HistoryView = ({ historyData, currentProvider, onLoadSession, onDeleteSess
   };
 
   const listHeight = Math.max(240, viewportHeight - 118);
+  const historyItemHeight = getScaledHistoryItemHeight(fontScale);
 
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -549,7 +564,7 @@ const HistoryView = ({ historyData, currentProvider, onLoadSession, onDeleteSess
         {sessions.length > 0 ? (
           <VirtualList
             items={sessions}
-            itemHeight={78}
+            itemHeight={historyItemHeight}
             height={listHeight}
             renderItem={renderHistoryItem}
             getItemKey={(session) => `${session.sessionId}-${session.lastTimestamp ?? '0'}`}
@@ -582,4 +597,3 @@ const HistoryView = ({ historyData, currentProvider, onLoadSession, onDeleteSess
 };
 
 export default HistoryView;
-

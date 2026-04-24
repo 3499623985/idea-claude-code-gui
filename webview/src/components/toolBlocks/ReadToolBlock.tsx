@@ -91,7 +91,7 @@ const ReadToolBlock = ({ input }: ReadToolBlockProps) => {
       </div>
 
       {expanded && params.length > 0 && (
-        <div className="task-details" style={{ padding: '12px', border: 'none' }}>
+        <div className="task-details" style={{ padding: 'var(--task-content-padding)', border: 'none' }}>
           <div
             style={{
               display: 'flex',

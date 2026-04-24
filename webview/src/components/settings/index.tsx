@@ -135,6 +135,7 @@ const SettingsView = ({
     setCustomSoundPath,
     diffExpandedByDefault,
     setDiffExpandedByDefault,
+    messageCompactMode,
     historyCompletionEnabled,
     setHistoryCompletionEnabled,
     handleSaveNodePath,
@@ -154,6 +155,7 @@ const SettingsView = ({
     handleTestSound,
     handleBrowseSound,
     handleSaveCommitPrompt,
+    handleMessageCompactModeChange,
     commitGenerationEnabled,
     setCommitGenerationEnabled,
     handleCommitGenerationEnabledChange,
@@ -433,6 +435,8 @@ const SettingsView = ({
               onDiffThemeChange={setDiffTheme}
               diffExpandedByDefault={diffExpandedByDefault}
               onDiffExpandedByDefaultChange={setDiffExpandedByDefault}
+              messageCompactMode={messageCompactMode}
+              onMessageCompactModeChange={handleMessageCompactModeChange}
               commitGenerationEnabled={commitGenerationEnabled}
               onCommitGenerationEnabledChange={(enabled) => {
                 handleCommitGenerationEnabledChange(enabled);

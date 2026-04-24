@@ -182,7 +182,7 @@ const BashToolGroupBlock = ({ items, deniedToolIds }: BashToolGroupBlockProps) =
       {expanded && (
         <div
           ref={listRef}
-          className="bash-group-timeline"
+          className={`bash-group-timeline ${overflowY === 'auto' ? 'has-scrollbar-gutter' : ''}`}
           style={{
             maxHeight: `${listHeight + 16}px`,
             overflowY: overflowY,
